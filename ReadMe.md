@@ -23,6 +23,15 @@ docker run -it \
    north-simulation
 ```
 
+4. **Note:** Currently the simulation only works with the BOUT-dev framework, and therefore we actually don't use the bout-distribution from the Docker image above. Therefore, currently you should also navigate to the shared directory and clone and compile the Bout-dev git:
+```
+cd ./bout-img-shared
+git clone git://github.com/boutproject/BOUT-dev.git
+cd BOUT-dev
+./configure
+make
+```
+
 ### Analysing simulated data with python
 The project is setup to analyse the data and plot the results on the host environment (i.e. on you personal computer and not in the docker container). You need a python installation (e.g. the Anaconda distribution) and an IDE for opening Jupyter Notebooks. I recommend creating a conda environment to ensure, that we're using the same python version and have the same requirements installed. Run the following commands from a terminal within the project directory:
 1. Create a new environment (only first time)
