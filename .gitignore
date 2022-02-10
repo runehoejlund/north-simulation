@@ -1,6 +1,27 @@
 # VSCode
 *.vscode
 
+# Data
+shared/NORTH/data/*
+shared/NORTH/north
+
+###########################
+# Python
+###########################
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+
+###########################
+# C++
+###########################
+
 # Prerequisites
 *.d
 
