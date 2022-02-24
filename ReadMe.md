@@ -4,19 +4,15 @@ Numerical model for a magnetically confined plasma in the NORTH tokamak. Note: T
 ## Getting started
 
 ### Setting up (build and run) bout++ container
-You need to have downloaded [Docker](https://docker.com/get-started) to run the project.
+You need to have downloaded [Docker](https://docker.com/get-started) to run the project. Start Docker (so that the Docker Deamon is running). Open a terminal from the project folder and run the following commands
 
-1. Start Docker (so that the Docker Deamon is running)
-
-2. Open a terminal from the project folder and run the following commands
-
-3. Build docker image from the Dockerfile
+1. Build docker image from the Dockerfile
 
 ```
 docker build -t north-simulation .
 ```
 
-4. Run the docker container using the just-built image with options:
+2. Run the docker container using the just-built image with options:
 
 `-it`: creates an interactive terminal in the container.
 `-v`: creates shared directory. Files in the docker image put in `/home/boutuser/bout-img-shared` should be visible in your host `shared` directory.
@@ -27,7 +23,7 @@ docker run -it \
    north-simulation
 ```
 
-5. **Note:** Currently the simulation only works with the BOUT-dev framework, and therefore we actually don't use the bout-distribution from the Docker image above. Therefore, currently you should also navigate to the shared directory and clone and compile the Bout-dev git:
+3. **Note:** Currently the simulation only works with the BOUT-dev framework, and therefore we actually don't use the bout-distribution from the Docker image above. Therefore, currently you should also navigate to the shared directory and clone and compile the Bout-dev git:
 ```
 cd ./bout-img-shared
 git clone git://github.com/boutproject/BOUT-dev.git
@@ -53,7 +49,7 @@ cd bout-img-shared/NORTH/
 make
 ```
 3. Start simulations
-```
+``` 
 ./north
 ```
 
