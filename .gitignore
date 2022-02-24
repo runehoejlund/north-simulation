@@ -3,6 +3,7 @@
 
 # Data
 shared/NORTH/data/*
+!shared/NORTH/data/BOUT.inp
 shared/NORTH/north
 
 ###########################
