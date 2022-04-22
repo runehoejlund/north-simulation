@@ -1,3 +1,6 @@
+# Ignore local playground folder
+playground
+
 # VSCode
 *.vscode
 
