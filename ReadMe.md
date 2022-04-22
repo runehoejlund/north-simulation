@@ -88,3 +88,19 @@ pip install -r requirements.txt
 ```
 
 Run the file `data_analysis.py` to reproduce the main results.
+
+## Usefull commands
+### Bout++ Commands
+Say you have Docker running, started a Docker container and navigated to the north directory. Then you can run the following commands:
+- Restart Simulation from where you left of, while **overwriting** output data BOUT.dmp.*.nc file.
+```
+./north restart
+```
+- Restart Simulation from where you left of, while **keeping** previous output data BOUT.dmp.*.nc file.
+```
+./north restart append
+```
+- Help on command line options
+```
+./north -h
+```
