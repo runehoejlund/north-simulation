@@ -56,9 +56,7 @@ exit
 ### Run Simulations
 If the Docker container isn't already running, open up a terminal and start it up:
 ```
-docker run -it \
-   -v $PWD/shared:/home/boutuser/bout-img-shared \
-   north-simulation
+docker run -it -v $PWD/shared:/home/boutuser/bout-img-shared north-simulation
 ```
 From within the Docker container terminal run the following commands:
 1. Navigate to the simulation code directory
