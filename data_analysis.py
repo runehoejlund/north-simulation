@@ -27,5 +27,11 @@ domain = data['n'].shape
 fig, ax = plt.subplots(2)
 ax[0].contourf(np.transpose(data['n'][-1, :, 0, :]), 100, cmap = 'inferno')
 ax[1].contourf(np.transpose(data['phi'][-1, :, 0, :]), 100, cmap = 'inferno')
-
 plt.show()
+
+# %%
+fig2 = plt.figure()
+plt.contourf(np.transpose(data['n'][-1, :, 0, :]), 100, cmap = 'inferno')
+plt.colorbar()
+plt.show()
+# %%
