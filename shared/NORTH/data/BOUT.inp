@@ -3,7 +3,7 @@
 #
 
 timestep 	= 100 		# Output timestep
-nout 		= 20 		# Number of output steps
+nout 		= 10 		# Number of output steps
 
 myg 		= 0			# No need for Y communications
 mxg 		= 2 		# x-guard cells
@@ -50,18 +50,20 @@ type 		= pvode
 R 		= 0.250     # m, 	major radius 
 a 		= 0.125 	# m, 	minor radius
 n0 		= 1e18  	# m^-3, plasma density
-Te0 		= 10 		# eV, 	electron temperature
+Te0 	= 10 		# eV, 	electron temperature
 B0 		= 0.1 		# T, 	magnetic field on axis
 
 e 		= 1.60e-19 	# C
 mp		= 1.67e-27 	# kg
 
-oci 		= e*B0/mp 		# ion gyrofrequency
-rho_s 		= sqrt(e*Te0/mp)/oci	# cold-ion hybrid thermal gyro-radius
 
-kappa 		= 2*rho_s/R 	# Effective gravity
+oci 		= e*B0/(2*mp) 		    # ion gyrofrequency
+rho_s 		= sqrt(e*Te0/mp)/oci   	# cold-ion hybrid thermal gyro-radius
+
+kappa 		= rho_s/R 	    # Effective gravity.
 Dvort 		= 1e-2	    	# Vorticity diffusion
-Dn 		= 1e-2 		# Density diffusion
+Dn 		    = 1e-2 	    	# Density diffusion
+DTe         = 1e-2          # Temperature diffusion
 tau_source	= 1e3
 tau_sink	= 1e4
 
@@ -76,6 +78,10 @@ sigma_z 	= (0.05/2)/north:R
 
 [n]
 scale       	= 7
+function 	= 1. + 0.1*mixmode(2*pi*x) * mixmode(z)
+
+[Te]
+scale       	= 10
 function 	= 1. + 0.1*mixmode(2*pi*x) * mixmode(z)
 
 [vort]
@@ -96,10 +102,10 @@ xpos0 = 0.80
 ypos0 = 0.00
 zpos0 = 0.50
 
-xpos1 = 0.85
+xpos1 = 0.82
 ypos1 = 0.00
 zpos1 = 0.50
 
-xpos2 = 0.90
+xpos2 = 0.84
 ypos2 = 0.00
 zpos2 = 0.50
