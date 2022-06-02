@@ -69,7 +69,7 @@ make
 ```
 3. Start simulations
 ``` 
-./north
+./north_full_ESEL
 ```
 
 ### Analysing simulated data with python
