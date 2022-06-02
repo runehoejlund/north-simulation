@@ -10,13 +10,13 @@ public:
   NORTH();
 	
 private:
-  Field3D n, vort, Te;  // Evolving density, vorticity and electron temperature
+  Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
   Field3D phi;      // Electrostatic potential
-  Field3D source_n; // Density source
+  Field3D source_n, source_T; // Density source, Temperature source
 
   // Model parameters
   BoutReal kappa;      // Effective gravity
-  BoutReal Dvort, Dn, DTe;  // Diffusion 
+  BoutReal Dvort, Dn, DT;  // Diffusion 
   BoutReal tau_source, tau_sink;
   
   // Method to use: BRACKET_ARAKAWA, BRACKET_STD or BRACKET_SIMPLE
@@ -41,14 +41,16 @@ int NORTH::init(bool UNUSED(restart)){
     kappa = options["kappa"].withDefault(1e-3);
     Dvort = options["Dvort"].withDefault(1e-2);
     Dn = options["Dn"].withDefault(1e-2);
+    DT = options["DT"].withDefault(1e-2);
     tau_source 	= options["tau_source"].withDefault(1);
     tau_sink 	= options["tau_sink"].withDefault(1);
 
 	initial_profile("source_n",  source_n);
+  initial_profile("source_T",  source_T);
 	
-    SOLVE_FOR(n, vort, Te);
+    SOLVE_FOR(T, vort, n);
     SAVE_REPEAT(phi);
-    SAVE_ONCE(source_n);
+    SAVE_ONCE(source_n, source_T);
 	
     phiSolver = Laplacian::create();
     phi = 0.; // Starting phi
@@ -107,6 +109,7 @@ if (fast_output.enabled) {
 
     // Add fields to be monitored
     fast_output.add("n"+std::to_string(i), n, ix, iy, iz);
+    fast_output.add("T"+std::to_string(i), T, ix, iy, iz);
     fast_output.add("phi"+std::to_string(i), phi, ix, iy, iz);
     i++;
   }
@@ -130,7 +133,7 @@ int NORTH::rhs(BoutReal t) {
   
 int NORTH::fields() {
 	ddt(n) = 0;
-  ddt(Te) = 0;
+  ddt(T) = 0;
   ddt(vort) = 0;
     return 0;
   }
@@ -140,22 +143,22 @@ int NORTH::fields() {
     phi = phiSolver->solve(vort, phi);
     
     // Communicate variables
-    mesh->communicate(n, vort, phi, Te);
+    mesh->communicate(n, vort, phi, T);
 	
 	// Convective transport
     ddt(n) += -bracket(phi, n, bm) ;
-    ddt(Te) += -bracket(phi, Te, bm) ;
+    ddt(T) += -bracket(phi, T, bm) ;
     ddt(vort) += -bracket(phi, vort, bm) ;
     return 0;
   }
   
   int NORTH::diffusive() {
 	// Communicate variables
-    mesh->communicate(n, vort);
+    mesh->communicate(n, vort, T);
 	
     // Diffusive transport
     ddt(n) += Dn*Delp2(n);
-    ddt(Te) += DTe*Delp2(Te);
+    ddt(T) += DT*Delp2(T);
     ddt(vort) += Dvort*Delp2(vort);
 	return 0;
   } 
@@ -163,14 +166,16 @@ int NORTH::fields() {
   int NORTH::source() {
     // Source term
     ddt(n) += source_n/tau_source;
+    ddt(T) += source_T/tau_source;
     
 	return 0;
   }
 	
   int NORTH::sink() {	
 	// Sink terms
+    mesh->communicate(n, vort, T);
     ddt(n) += -n/tau_sink;
-    ddt(Te) += -Te/tau_sink;
+    ddt(T) += -T/tau_sink;
 	  ddt(vort) += -vort/tau_sink;
     
 	return 0;
@@ -178,12 +183,13 @@ int NORTH::fields() {
 
   int NORTH::curvature() {	
 	// curvature terms
-    ddt(n) += kappa*(DDZ(n*Te)-n*DDZ(phi));
-    ddt(Te) += -2/3*Te*kappa*DDZ(phi) + 7/3*Te*kappa*DDZ(Te) + 2/3*pow(Te,2)/n*kappa*DDZ(n);
-	  ddt(vort) += kappa*DDZ(n*Te);
+    mesh->communicate(n, vort, T, phi);
+    ddt(n) += kappa*(DDZ(n*T)-n*DDZ(phi));
+    ddt(T) += -2/3*T*kappa*DDZ(phi) + 7/3*T*kappa*DDZ(T) + 2/3*pow(T,2)/n*kappa*DDZ(n);
+	  ddt(vort) += kappa*DDZ(n*T);
 	return 0;
   }
 
-  
+
 // Define a main() function
 BOUTMAIN(NORTH);

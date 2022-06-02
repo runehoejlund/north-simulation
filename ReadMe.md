@@ -94,13 +94,13 @@ Run the file `data_analysis.py` to reproduce the main results.
 Say you have Docker running, started a Docker container and navigated to the north directory. Then you can run the following commands:
 - Restart Simulation from where you left of, while **overwriting** output data BOUT.dmp.*.nc file.
 ```
-./north restart
+./north_full_ESEL restart
 ```
 - Restart Simulation from where you left of, while **keeping** previous output data BOUT.dmp.*.nc file.
 ```
-./north restart append
+./north_full_ESEL restart append
 ```
 - Help on command line options
 ```
-./north -h
+./north_full_ESEL -h
 ```

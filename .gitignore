@@ -1,5 +1,7 @@
 # Ignore local playground folder
 playground
+shared/BOUT-dev/
+plots/**
 
 # VSCode
 *.vscode
