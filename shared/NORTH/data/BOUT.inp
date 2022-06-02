@@ -2,8 +2,8 @@
 # NORTH input file
 #
 
-timestep 	= 100 		# Output timestep
-nout 		= 1 		# Number of output steps
+timestep 	= 10 		# Output timestep
+nout 		= 10 		# Number of output steps
 
 myg 		= 0			# No need for Y communications
 mxg 		= 2 		# x-guard cells

@@ -46,24 +46,25 @@ domain = data['n'].shape
 #%% Plot data
 
 probe_pos = [0.80, 0.82, 0.84]
+dmp_nr = 2
 
 fig, ax = plt.subplots(3)
 
-plot0 = ax[0].contourf(np.transpose(data['n'][1, :, 0, :]), 100, cmap = 'inferno')
+plot0 = ax[0].contourf(np.transpose(data['n'][dmp_nr, :, 0, :]), 100, cmap = 'inferno')
 for probe in probe_pos:
     ax[0].plot([int(probe*domain[1])+2], [int(0.50*domain[3])], 'o')
 ax[0].set_xlabel('x')
 ax[0].set_ylabel('y')
 plt.colorbar(plot0, ax=ax[0])
 
-plot1 = ax[1].contourf(np.transpose(data['T'][1, :, 0, :]), 100, cmap = 'inferno')
+plot1 = ax[1].contourf(np.transpose(data['T'][dmp_nr, :, 0, :]), 100, cmap = 'inferno')
 for probe in probe_pos:
     ax[1].plot([int(probe*domain[1])+2], [int(0.50*domain[3])], 'o')
 ax[1].set_xlabel('x')
 ax[1].set_ylabel('y')
 plt.colorbar(plot1, ax=ax[1])
 
-plot2 = ax[2].contourf(np.transpose(data['vort'][1, :, 0, :]), 100, cmap = 'inferno')
+plot2 = ax[2].contourf(np.transpose(data['vort'][dmp_nr, :, 0, :]), 100, cmap = 'jet')
 for probe in probe_pos:
     ax[2].plot([int(probe*domain[1])+2], [int(0.50*domain[3])], 'o')
 ax[2].set_xlabel('x')
@@ -123,9 +124,9 @@ def animate(i):
     fig.tight_layout()
 
 # Call animate method
-ani = animation.FuncAnimation(fig, animate, frames=2, interval=100, blit=False)
+ani = animation.FuncAnimation(fig, animate, frames=3, interval=100, blit=False)
 
-ani.save('results/animation_Te.mp4',
+ani.save('plots/animation_Te.mp4',
           writer = 'ffmpeg', fps = 5)
 
 plt.show()
