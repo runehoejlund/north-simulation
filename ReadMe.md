@@ -146,13 +146,13 @@ here are some usefull commands. If you're on your personal computer, I assume yo
 ```
 
 ### Niflheim: Slurm Commands
-- show your queue
-```
-squeue -u $USER
-```
 - Submit batch job (look at Slurm Batch job script in `shared/NORTH/` for how to write a sbatch file):
 ```
 sbatch sbatch_north_full_ESEL.sh
+```
+- show your queue
+```
+squeue -u $USER
 ```
 - Cancel all your jobs:
 ```
