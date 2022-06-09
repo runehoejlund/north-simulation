@@ -3,6 +3,9 @@ playground
 shared/BOUT-dev/
 plots/**
 
+# Ignore log files
+*.log
+
 # VSCode
 *.vscode
 
@@ -10,6 +13,7 @@ plots/**
 shared/NORTH/data/*
 !shared/NORTH/data/BOUT.inp
 shared/NORTH/north
+shared/NORTH/north_full_ESEL
 
 ###########################
 # Python
