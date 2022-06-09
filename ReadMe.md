@@ -13,7 +13,7 @@ cd ./north-simulation
 ```
 2. Install necessary dependencies. We need to build our own modules for HDF5, netCDF-C and netCDF-C++. Niflheim uses [Lmod](https://lmod.readthedocs.io/en/latest/) for handling software modules. The installation script should take care of everything:
 ```
-. install_bout_env_niflheim.sh
+. install_bout_env_niflheim.sh north-simulation
 ```
 3. Navigate to the shared directory and clone and compile the Bout-dev git (make sure the path `~/north-simulation` equals the path to the repo directory):
 ```
@@ -29,7 +29,7 @@ make
 Use `module restore bout` to load in module collection (which was saved in previous step). You may add this line to the file `.bashrc`, which is located at your user directory (`cd ~/`), in order to automatically load required modules on every login.
 1. Navigate to the simulation code directory
 ```
-cd bout-img-shared/NORTH/
+cd shared/NORTH/
 ```
 2. Compile simulation code
 ```
@@ -111,7 +111,7 @@ make
 ```
 
 ----------------------------------------------------
-## Analysing simulated data with python
+## Personal computer: Analysing simulated data with python
 The project is setup to analyse the data and plot the results on the host environment (i.e. on you personal computer and not in the docker container). You need a python installation (e.g. the Anaconda distribution) and an IDE for opening Jupyter Notebooks. I recommend creating a conda environment to ensure, that we're using the same python version and have the same requirements installed. Run the following commands from a terminal within the project directory:
 1. Create a new environment (only first time)
 ```
