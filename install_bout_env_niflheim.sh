@@ -2,15 +2,25 @@
 # Install Bout++ Dependencies: HDF5, NetCDF on Niflheim
 
 START_DIR=$PWD
+VENV_NAME=$1
+VENV_DIR=~/local/venv/$VENV_NAME
+USAGE="Usage: . ./install_bout_env_niflheim.sh venv_name"
+
+if [[ $# != 1 ]]; then
+    echo "Wrong number of arguments, expected 1 got $#"
+    echo $USAGE
+    cd $START_DIR
+    return
+fi
 
 MOD_DIR=~/local/modules
 MOD_FILES_DIR=$MOD_DIR/modules/all
 MOD_DOWN_DIR=$MOD_DIR/downloads
 MOD_INSTALL_DIR=$MOD_DIR/software
 
-echo "purging modules and loading tool-chains: foss, intel"
+echo "purging modules and loading tool-chains: foss, intel, Python"
 module purge
-module load foss intel
+module load foss intel Python
 
 echo "copying module files to $MOD_FILES_DIR"
 mkdir -p $MOD_FILES_DIR
@@ -74,16 +84,35 @@ else
     echo "NetCDF already installed. Skipping this step."
 fi
 
+echo "####################################"
+echo "Install and setup myqueue"
+# Create venv:
+echo "Creating virtual environment $VENV_NAME"
+mkdir -p $VENV_DIR
+python3 -m venv --system-site-packages $VENV_DIR
+cd $VENV_DIR
+. bin/activate
+PIP="python3 -m pip"
+$PIP install --upgrade pip -qq
+$PIP install myqueue
+mq completion >> bin/activate
+$PIP completion --bash >> bin/activate
+. bin/activate
+
 # Purge and reload all required modules
 module purge
 module use $MOD_FILES_DIR
-module load foss intel HDF5/1.12.1 netCDF/2022
+module load foss intel HDF5/1.12.1 netCDF/2022 Python
 module save bout
 
 echo "####################################"
 echo "Succesfully installed all requirements"
-echo "Add the following to your .bashrc to make modules available"
+echo "Add the following to your .bashrc to make modules available "
+echo "and activate python venv (you may use ~/ "
+echo "instead of full user directory)."
+echo ""
 echo "module use $MOD_FILES_DIR"
+echo ". $VENV_DIR/bin/activate"
 echo "####################################"
 echo "Use the following command to activate the environment:"
 echo "module restore bout"

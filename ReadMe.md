@@ -4,7 +4,7 @@ Numerical model for a magnetically confined plasma in the NORTH tokamak. Note: T
 ## Getting started
 ---------------------------------------------------------
 ### Niflheim (HPC-environment): First time Setup:
-Skim the Niflheim user guide: https://wiki.fysik.dtu.dk/niflheim/Niflheim7_Getting_started#software-environment-modules.
+Skim the Niflheim user guide: https://wiki.fysik.dtu.dk/niflheim/Niflheim7_Getting_started.
 I used the slid-node.
 1. Clone the git repository to Niflheim and open the repository directory:
 ```
@@ -143,4 +143,22 @@ here are some usefull commands. If you're on your personal computer, I assume yo
 - Help on command line options
 ```
 ./north_full_ESEL -h
+```
+
+### Niflheim: Slurm Commands
+- show your queue
+```
+squeue -u $USER
+```
+- Submit batch job (look at Slurm Batch job script in `shared/NORTH/` for how to write a sbatch file):
+```
+sbatch sbatch_north_full_ESEL.sh
+```
+- Cancel all your jobs:
+```
+scancel -u $USER
+```
+- Cancel all pending jobs:
+```
+scancel -t PD
 ```

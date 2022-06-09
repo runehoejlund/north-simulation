@@ -3,6 +3,9 @@ playground
 shared/BOUT-dev/
 plots/**
 
+# Ignore log files
+*.log
+
 # VSCode
 *.vscode
 
