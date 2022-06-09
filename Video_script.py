@@ -46,7 +46,7 @@ domain = data['n'].shape
 #%% Plot data
 
 probe_pos = [0.80, 0.82, 0.84]
-dmp_nr = 2
+dmp_nr = 80
 
 fig, ax = plt.subplots(3)
 
@@ -73,9 +73,9 @@ plt.colorbar(plot2, ax=ax[2])
 fig.tight_layout()
 
 
-plt.show()
+plt.show(block=False)
 
-
+#%%
 
 fig, ax = plt.subplots(3)
 
@@ -102,7 +102,9 @@ ax[2].title.set_text('Probe position = {:.2f}'.format(probe_pos[2]))
 
 fig.tight_layout()
 
+plt.show()
 
+#%%
 
 plt.rcParams["figure.figsize"] = [7.0, 7.0]
 plt.rcParams["figure.autolayout"] = True
@@ -113,21 +115,20 @@ fig, ax = plt.subplots()
 # Method to change the contour data points
 def animate(i):
     ax.clear()
-    #ax.contourf(np.transpose(data['vort'][i, :, 0, :]), 100, cmap = 'jet', vmin=-0.20, vmax=0.20)
-    ax.contourf(np.transpose(data['n'][i, :, 0, :]), 100, cmap = 'inferno', vmin=4, vmax=12)
-    #ax.contourf(np.transpose(data['T'][i, :, 0, :]), 100, cmap = 'inferno', vmin=0, vmax=12)
+    #ax.contourf(np.transpose(data['vort'][i, :, 0, :]), 100, cmap = 'jet', vmin=-0.6, vmax=0.6)
+    ax.contourf(np.transpose(data['n'][i, :, 0, :]), 100, cmap = 'inferno', vmin=5.5, vmax=10.5)
+    #plot_vid = ax.contourf(np.transpose(data['T'][i, :, 0, :]), 100, cmap = 'hot', vmin=0.85, vmax=1.25)
     for probe in probe_pos:
         ax.plot([int(probe*domain[1])+2], [int(0.50*domain[3])], 'o')
     ax.set_xlabel('x')
     ax.set_ylabel('y')
-
     fig.tight_layout()
 
 # Call animate method
-ani = animation.FuncAnimation(fig, animate, frames=3, interval=100, blit=False)
+ani = animation.FuncAnimation(fig, animate, frames=81, interval=100, blit=False)
 
-ani.save('plots/animation_Te.mp4',
-          writer = 'ffmpeg', fps = 5)
+ani.save('plots/animation_ne_2.mp4',
+          writer = 'ffmpeg', fps = 10)
 
 plt.show()
 # %%
