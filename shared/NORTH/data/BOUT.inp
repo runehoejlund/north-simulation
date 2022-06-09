@@ -3,7 +3,7 @@
 #
 
 timestep 	= 10 		# Output timestep
-nout 		= 10 		# Number of output steps
+nout 		= 60 		# Number of output steps
 
 myg 		= 0			# No need for Y communications
 mxg 		= 2 		# x-guard cells
@@ -63,7 +63,7 @@ rho_s 		= sqrt(2*e*Te0/(N_nuclei*mp))/oci   	# cold-ion hybrid thermal gyro-radi
 kappa 		= rho_s/R 	    # Effective gravity.
 Dvort 		= 1e-2	    	# Vorticity diffusion
 Dn 		    = 1e-2 	    	# Density diffusion
-DT          = 1e-2          # Temperature diffusion
+DT          = 1e-3          # Temperature diffusion
 tau_source	= 1e3
 tau_sink	= 1e4
 
@@ -73,15 +73,15 @@ bracket 	= 2 		# 0 = std, 1 = simple, 2 = arakawa
 scale 		= 1.
 bndry_all 	= neumann_o2
 
-sigma_x 	= 0.1*sigma_z
 sigma_z 	= (0.05/2)/north:R
+sigma_x 	= 0.1*sigma_z
 
 [n]
 scale       	= 7
 function 	= 1. + 0.1*mixmode(2*pi*x) * mixmode(z)
 
 [T]
-scale       	= 10
+scale       	= 1
 function 	= 1. + 0.1*mixmode(2*pi*x) * mixmode(z)
 
 [vort]
@@ -93,7 +93,7 @@ scale       	= 1
 function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z/(2*pi)-0.5)^2/(2*all:sigma_z^2))
 
 [source_T]
-scale       	= 1
+scale       	= 0.1
 function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z/(2*pi)-0.5)^2/(2*all:sigma_z^2))
 
 
