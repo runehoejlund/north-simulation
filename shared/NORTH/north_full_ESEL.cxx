@@ -12,12 +12,12 @@ public:
 private:
   Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
   Field3D phi;      // Electrostatic potential
-  Field3D source_n, source_T; // Density source, Temperature source
+  Field3D source_n, source_T, wall_shadow; // Density source, Temperature source
 
   // Model parameters
   BoutReal kappa;      // Effective gravity
   BoutReal Dvort, Dn, DT;  // Diffusion 
-  BoutReal tau_source, tau_sink;
+  BoutReal tau_source, tau_sink, tau_wall; // Characteristic times
   
   // Method to use: BRACKET_ARAKAWA, BRACKET_STD or BRACKET_SIMPLE
   BRACKET_METHOD bm; // Bracket method for advection terms
@@ -44,13 +44,15 @@ int NORTH::init(bool UNUSED(restart)){
     DT = options["DT"].withDefault(1e-2);
     tau_source 	= options["tau_source"].withDefault(1);
     tau_sink 	= options["tau_sink"].withDefault(1);
+    tau_wall = options["tau_wall"].withDefault(1);
 
 	initial_profile("source_n",  source_n);
   initial_profile("source_T",  source_T);
+  initial_profile("wall_shadow",  wall_shadow);
 	
     SOLVE_FOR(T, vort, n);
     SAVE_REPEAT(phi);
-    SAVE_ONCE(source_n, source_T);
+    SAVE_ONCE(source_n, source_T, wall_shadow);
 	
     phiSolver = Laplacian::create();
     phi = 0.; // Starting phi
@@ -174,7 +176,7 @@ int NORTH::fields() {
   int NORTH::sink() {	
 	// Sink terms
     mesh->communicate(n, vort, T);
-    ddt(n) += -n/tau_sink;
+    ddt(n) += -n/tau_sink-n*wall_shadow/tau_wall;
     ddt(T) += -T/tau_sink;
 	  ddt(vort) += -vort/tau_sink;
     
