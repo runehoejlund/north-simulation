@@ -13,7 +13,7 @@ cd ./north-simulation
 ```
 2. Install necessary dependencies. We need to build our own modules for HDF5, netCDF-C and netCDF-C++. Niflheim uses [Lmod](https://lmod.readthedocs.io/en/latest/) for handling software modules. The installation script should take care of everything:
 ```
-. install_bout_env_niflheim.sh north-simulation
+. ./install_bout_env_niflheim.sh north-simulation
 ```
 3. Navigate to the shared directory and clone and compile the Bout-dev git (make sure the path `~/north-simulation` equals the path to the repo directory):
 ```

@@ -1,14 +1,14 @@
 #!/bin/bash
 #SBATCH --mail-type=NONE
-#SBATCH --partition=xeon16
+#SBATCH --partition=xeon24
 #SBATCH -N 1 # Number of nodes
-#SBATCH -n 16 # Total number of tasks
-#SBATCH --time=1-00:15:00
-#SBATCH --output=./slurm_out/north_full_ESEL.log
-#SBATCH --error=./slurm_out/north_full_ESEL_err.log
+#SBATCH -n 12 # Total number of tasks
+#SBATCH --time=0-00:20:00
+#SBATCH --output=./slurm_out/north_full_ESEL_2.log
+#SBATCH --error=./slurm_out/north_full_ESEL_2_err.log
 
 module use ~/local/modules/modules/all
-source ~/local/venv/north-simulation/bin/activate
 module restore bout
 
-./north_full_ESEL
+make
+mpirun -n $SLURM_NTASKS ./north_full_ESEL
