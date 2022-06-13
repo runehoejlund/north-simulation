@@ -1,14 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Dec  6 10:08:12 2021
 
-@author: alec
-"""
 #%%
 import numpy as np
+
+
 from matplotlib import pyplot as plt
 from boutdata import collect
-
 import matplotlib.cm as cm
 import matplotlib.animation as animation
 from matplotlib.animation import FuncAnimation
