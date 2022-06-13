@@ -177,7 +177,7 @@ int NORTH::fields() {
 	// Sink terms
     mesh->communicate(n, vort, T);
     ddt(n) += -n/tau_sink-n*wall_shadow/tau_wall;
-    ddt(T) += -T/tau_sink;
+    ddt(T) += -T/tau_sink-T*wall_shadow/tau_wall;
 	  ddt(vort) += -vort/tau_sink;
     
 	return 0;
