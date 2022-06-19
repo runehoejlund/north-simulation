@@ -1,14 +1,21 @@
 #
 # NORTH input file
 #
+# x - The radial coordinate (rho)
+# y - The height of the cylinder (z)
+# z - The azimuthal coordinate (theta)
 
 timestep 	= 10 		# Output timestep
-nout 		= 60 		# Number of output steps
+nout 		= 8 		# Number of output steps
 
 myg 		= 0			# No need for Y communications
-mxg 		= 2 		# x-guard cells
+mxg 		= 1 		# x-guard cells
 
 monitor_timestep = true
+
+# Set the z coordinate range
+ZMIN = 0.0
+ZMAX = 1.0 
 
 [mesh]
 nx 			= 256+2*mxg	# internal grid points plus guard cells along x-axis
@@ -18,9 +25,25 @@ nz 			= 256 		# internal grid points along z-axis
 Lx 			= north:R/north:rho_s 		# simulation length along x-axis
 Lz 			= north:R/north:rho_s 		# simulation length along z-axis
 
-dx 			= Lx/(nx-1-2*mxg)      # grid spacing along x-axis
-dy 			= 1.0                  # grid spacing along y-axis
-dz 			= Lz/(nz-1)            # grid spacing along z-axis
+dx 			= Lx/(nx-1-2*mxg)           # grid spacing along x-axis
+dy 			= 1.0                       # grid spacing along y-axis
+dz 			= Lz/(nz-1)                 # grid spacing along z-axis
+
+# The metrics
+xl          = (x * Lx)                  # x (rho)-coordinate in range [0,Lx]
+g33         = 1/(xl^2)                  # contravariant metric tensor component g^{33} (g^{theta theta})
+J           = xl                        # Jacobian (determinant)
+
+# Puts the boundaries half a step outside the last gridpoints
+symmetricGlobalY=true
+symmetricGlobalX=true
+
+# Position of the separatrix
+# Points 0 <= x < ixseps1 are inside separatrix, ixseps1 <= x < ngx outside
+# --------Non-periodic----------
+ixseps1 = -1
+ixseps2 = -1
+# ------------------------------
 
 [mesh:ddx] 	# methods used for x derivative terms
 first  		= C4  		# d/dx (f)

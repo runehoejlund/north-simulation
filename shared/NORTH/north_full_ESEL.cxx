@@ -4,6 +4,7 @@
 #include <derivs.hxx>
 #include <initialprofiles.hxx>
 #include "BoutFastOutput/fast_output.hxx"
+#include "./utils/include/cylindricalBCs.hxx"
 
 class NORTH : public PhysicsModel {
 public:
@@ -19,6 +20,8 @@ private:
   BoutReal Dvort, Dn, DT;  // Diffusion 
   BoutReal tau_source, tau_sink, tau_wall; // Characteristic times
   
+  CylindricalBCs cylBCs; // Class containing methods which sets the ghost points at singularity (rho=0)
+
   // Method to use: BRACKET_ARAKAWA, BRACKET_STD or BRACKET_SIMPLE
   BRACKET_METHOD bm; // Bracket method for advection terms
   
@@ -120,7 +123,13 @@ if (fast_output.enabled) {
     return 0;
   }
   
-int NORTH::rhs(BoutReal t) {    
+int NORTH::rhs(BoutReal t) {
+  // Treat singularity at rho = 0
+  cylBCs.innerRhoCylinder(n)
+  cylBCs.innerRhoCylinder(T)
+  cylBCs.innerRhoCylinder(vort)
+  cylBCs.innerRhoCylinder(phi)
+
 	fields();
   interchange();     
   diffusive();     
