@@ -1,26 +1,48 @@
 #
 # NORTH input file
 #
+# x - The radial coordinate (rho)
+# y - The height of the cylinder (z)
+# z - The azimuthal coordinate (theta)
 
 timestep 	= 10 		# Output timestep
-nout 		= 300		# Number of output steps
+nout 		= 20 		# Number of output steps
 
-myg 		= 0			# No need for Y communications
+myg 		= 0		    # No need for Y communications
 mxg 		= 2 		# x-guard cells
 
 monitor_timestep = true
 
 [mesh]
-nx 			= 256+2*mxg	# internal grid points plus guard cells along x-axis
-ny 			= 1 		# y is along magnetic field, set to 1
+nx 			= 64+2*mxg	# internal grid points plus guard cells along x-axis
+ny 			= 1      	# y is along magnetic field, set to 1
 nz 			= 256 		# internal grid points along z-axis
 
-Lx 			= north:R/north:rho_s 		# simulation length along x-axis
-Lz 			= north:R/north:rho_s 		# simulation length along z-axis
+Lx 			= north:a/north:rho_s 		# simulation length along x-axis
 
-dx 			= Lx/(nx-1-2*mxg)      # grid spacing along x-axis
-dy 			= 1.0                  # grid spacing along y-axis
-dz 			= Lz/(nz-1)            # grid spacing along z-axis
+dx 			= Lx/(nx-1-2*mxg)           # grid spacing along x-axis
+dy 			= 1.0                       # grid spacing along y-axis
+
+# Set the z coordinate range in multiples of 2 pi
+ZMIN = 0.0
+ZMAX = 1.0 # So we will get: dz = 2*pi(ZMAX - ZMIN)/(nz-1)
+
+# The metrics
+xl          = (x * Lx)                  # x (rho)-coordinate in range [0,Lx]
+g33         = 1/(max(xl,1/(2*nx))^2)    # contravariant metric tensor component g^{33} (g^{theta theta})
+J           = max(xl,1/(2*nx))          # Jacobian (determinant)
+Bxy         = 1                         # Magnetic field in Clebsch form B = \grad z \cross \grad x: https://bout-dev.readthedocs.io/en/latest/user_docs/coordinates.html#id1
+
+# Puts the boundaries half a step outside the last gridpoints
+symmetricGlobalY=true
+symmetricGlobalX=true
+
+# Position of the separatrix
+# Points 0 <= x < ixseps1 are inside separatrix, ixseps1 <= x < ngx outside
+# --------Non-periodic----------
+ixseps1 = -1
+ixseps2 = -1
+# ------------------------------
 
 [mesh:ddx] 	# methods used for x derivative terms
 first  		= C4  		# d/dx (f)
@@ -80,27 +102,44 @@ bndry_all 	= neumann_o2
 sigma_z = 0.7540
 sigma_x = 0.01333
 
+# =============================================================================
 [n]
 scale       	= 0.5
 function 	= 1. + 0.2*mixmode(2*pi*x) * mixmode(z)
 # function    = exp(-(x-(north:a + 7.1e-3)/north:R)^2/(all:sigma_z^2))*exp(-(z/(2*pi)-0.5)^2/(2*all:sigma_z^2))
 
+# Boundaries
+bndry_xin   = none              # Manual boundary found in code
+bndry_xout  = neumann_o2(0.0)   # Set to neumann
+# =============================================================================
+
+# =============================================================================
 [T]
 scale       	= 0.5
 function 	= 1. + 0.02*mixmode(2*pi*x) * mixmode(z)
 
+# Boundaries
+bndry_xin   = none              # Manual boundary found in code
+bndry_xout  = neumann_o2(0.0)   # Set to neumann
+# =============================================================================
+
+# =============================================================================
 [vort]
-scale          	= 0.01
-function 	= mixmode(2*pi*x) * mixmode(z) 
+scale       = 0.01
+function 	= mixmode(2*pi*x) * mixmode(z)
+
+# Boundaries
+bndry_xin   = none              # Manual boundary found in code
+bndry_xout  = neumann_o2(0.0)   # Set to neumann
+# =============================================================================
 
 [source_n]
-scale       	= 4
+scale       = 4
 # function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z/(2*pi)-0.5)^2/(2*all:sigma_z^2))
 function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z-pi)^2/(2*all:sigma_z^2))
 
-
 [source_T]
-scale       	= 4
+scale       = 4
 # function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z/(2*pi)-0.5)^2/(2*all:sigma_z^2))
 function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z-pi)^2/(2*all:sigma_z^2))
 
@@ -116,14 +155,15 @@ type = monitor
 frequency_multiplier = 100
 flush = false
 
-xpos0 = 0.80
-ypos0 = 0.00
-zpos0 = 0.50
+# Probes in cartesian coordinates
+x1pos0 = 0.80
+x2pos0 = 0.00 # In direction of B-field
+x3pos0 = 0.50
 
-xpos1 = 0.82
-ypos1 = 0.00
-zpos1 = 0.50
+x1pos1 = 0.82
+x2pos1 = 0.00 # In direction of B-field
+x3pos1 = 0.50
 
-xpos2 = 0.84
-ypos2 = 0.00
-zpos2 = 0.50
+x1pos2 = 0.84
+x2pos2 = 0.00 # In direction of B-field
+x3pos2 = 0.50
