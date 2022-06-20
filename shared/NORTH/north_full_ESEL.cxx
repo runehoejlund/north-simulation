@@ -5,6 +5,7 @@
 #include <initialprofiles.hxx>
 #include "BoutFastOutput/fast_output.hxx"
 #include "./utils/include/cylindricalBCs.hxx"
+#include <bout/constants.hxx> // Gives PI and TWOPI
 
 class NORTH : public PhysicsModel {
   public:
@@ -27,7 +28,8 @@ class NORTH : public PhysicsModel {
     
     class Laplacian* phiSolver; // Laplacian solver for vort -> phi
     
-    int fields(), interchange(), diffusive(), source(), sink(), curvature() ;
+    int fields(), interchange(), diffusive(), source(), sink(), curvature();
+    Field3D C(const Field3D &f);
     
     // Create object from FastOutput class
     FastOutput fast_output;
@@ -152,8 +154,8 @@ int NORTH::fields() {
 	ddt(n) = 0;
   ddt(T) = 0;
   ddt(vort) = 0;
-    return 0;
-  }
+  return 0;
+}
   
 int NORTH::interchange() {
   // Solve for potential
@@ -201,12 +203,21 @@ int NORTH::sink() {
 int NORTH::curvature() {	
   // curvature terms
   mesh->communicate(n, vort, T, phi);
-  ddt(n) += kappa*(DDZ(n*T)-n*DDZ(phi));
-  ddt(T) += -2/3*T*kappa*DDZ(phi) + 7/3*T*kappa*DDZ(T) + 2/3*pow(T,2)/n*kappa*DDZ(n);
-  ddt(vort) += kappa*DDZ(n*T);
+  ddt(n) += (C(n*T)-n*C(phi));
+  ddt(T) += -2/3*T*C(phi) + 7/3*T*C(T) + 2/3*pow(T,2)/n*C(n);
+  ddt(vort) += C(n*T);
   return 0;
 }
 
+Field3D NORTH::C(const Field3D &f) {
+  Vector2D zhat; // vertical unit vector (z-hat in toroidal coordinates)
+  zhat.covariant = false;
+  zhat.x = 1.0;
+  zhat.y = 0.0;
+  zhat.z = PI/2.0;
+
+  return kappa*V_dot_Grad(zhat, f);
+}
 
 // Define a main() function
 BOUTMAIN(NORTH);
