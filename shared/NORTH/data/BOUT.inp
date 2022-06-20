@@ -156,14 +156,6 @@ frequency_multiplier = 100
 flush = false
 
 # Probes in cartesian coordinates
-x1pos0 = 0.80
-x2pos0 = 0.00 # In direction of B-field
-x3pos0 = 0.50
-
-x1pos1 = 0.82
-x2pos1 = 0.00 # In direction of B-field
-x3pos1 = 0.50
-
-x1pos2 = 0.84
-x2pos2 = 0.00 # In direction of B-field
-x3pos2 = 0.50
+xprobe0 = 0.80
+xprobe1 = 0.82
+xprobe2 = 0.84

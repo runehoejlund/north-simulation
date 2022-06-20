@@ -1,16 +1,14 @@
 #!/bin/bash
 #SBATCH --mail-type=NONE
-#SBATCH --partition=xeon16
+#SBATCH --partition=xeon40
 #SBATCH -N 1 # Number of nodes
-#SBATCH -n 1 # Total number of tasks
-#SBATCH --time=0-00:00:10
-#SBATCH --output=./slurm_out/north_full_$SLURM_NTASKS_%j_ESEL.log
-#SBATCH --error=./slurm_out/north_full_$SLURM_NTASKS_%j_ESEL_err.log
+#SBATCH -n 32 # Total number of tasks
+#SBATCH --time=0-02:00:00
+#SBATCH --output=./slurm_out/north_full_%SLURM_NTASKS_%j_ESEL.log
+#SBATCH --error=./slurm_out/north_full_%SLURM_NTASKS_%j_ESEL_err.log
 
-echo %DATE
+module use ~/local/modules/modules/all
+module restore bout
 
-# module use ~/local/modules/modules/all
-# module restore bout
-
-# make
-# mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true
+make
+mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true
