@@ -1,7 +1,7 @@
 # Ignore local playground folder
 playground
 shared/BOUT-dev/
-plots/**
+plots*
 
 # Ignore log files
 *.log
@@ -10,8 +10,10 @@ plots/**
 *.vscode
 
 # Data
+BOUT*
+.BOUT*
+!BOUT.inp
 shared/NORTH/data/*
-!shared/NORTH/data/BOUT.inp
 shared/NORTH/north
 shared/NORTH/north_full_ESEL
 

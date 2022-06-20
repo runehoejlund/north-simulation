@@ -1,10 +1,11 @@
 #!/usr/bin/bash
 # Install Bout++ Dependencies: HDF5, NetCDF on Niflheim
 
+FORCE=true # Set to true to reconfigure and recompile all software modules (even though they're already installed)
 START_DIR=$PWD
 VENV_NAME=$1
 VENV_DIR=~/local/venv/$VENV_NAME
-USAGE="Usage: . ./install_bout_env_niflheim.sh venv_name"
+USAGE="Usage: ./install_bout_env_niflheim.sh venv_name"
 
 if [[ $# != 1 ]]; then
     echo "Wrong number of arguments, expected 1 got $#"
@@ -18,9 +19,9 @@ MOD_FILES_DIR=$MOD_DIR/modules/all
 MOD_DOWN_DIR=$MOD_DIR/downloads
 MOD_INSTALL_DIR=$MOD_DIR/software
 
-echo "purging modules and loading tool-chains: foss, intel, Python"
+echo "purging modules and loading tool-chains: foss, Python"
 module purge
-module load foss intel Python
+module load foss Python
 
 echo "copying module files to $MOD_FILES_DIR"
 mkdir -p $MOD_FILES_DIR
@@ -30,7 +31,7 @@ mkdir -p $MOD_DOWN_DIR
 
 # Install HDF5
 echo "####################################"
-if [ ! -d $MOD_INSTALL_DIR/HDF5/1.12.1 ]; then
+if [[ (! -d $MOD_INSTALL_DIR/HDF5/1.12.1) || $FORCE ]]; then
     echo "Installing HDF5 at $MOD_INSTALL_DIR/HDF5/1.12.1"
     cd $MOD_DOWN_DIR
     if [ ! -d ./hdf5-1.12.1 ]; then
@@ -52,7 +53,7 @@ module load HDF5/1.12.1
 
 # Install NetCDF-C
 echo "####################################"
-if [ ! -d $MOD_INSTALL_DIR/netCDF ]; then
+if [[ (! -d $MOD_INSTALL_DIR/netCDF) || $FORCE ]]; then
     echo "Installing NetCDF-C"
     cd $MOD_DOWN_DIR
     if [ ! -d ./netcdf-c-4.8.1 ]; then
@@ -102,8 +103,17 @@ $PIP completion --bash >> bin/activate
 # Purge and reload all required modules
 module purge
 module use $MOD_FILES_DIR
-module load foss intel HDF5/1.12.1 netCDF/2022 Python
+module load foss HDF5/1.12.1 netCDF/2022 Python
 module save bout
+
+# # Install Bout-Dev
+# echo "####################################"
+# echo "Installing Bout-Dev"
+# cd ~/north-simulation/shared
+# git clone https://github.com/boutproject/BOUT-dev.git
+# cd BOUT-dev
+# ./configure
+# make
 
 echo "####################################"
 echo "Succesfully installed all requirements"

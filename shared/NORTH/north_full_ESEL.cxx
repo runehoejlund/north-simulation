@@ -84,6 +84,28 @@ int NORTH::init(bool UNUSED(restart)){
       return 1;
     }
 
+    
+    Coordinates* coord = mesh->getCoordinates();
+
+    // generate coordinate system
+    coord->Bxy = 1;
+
+    coord->g11 = 1.0;
+    coord->g22 = 1.0;
+    coord->g33 = 1.0;
+    coord->g12 = 0.0;
+    coord->g13 = 0.0;
+    coord->g23 = 0.0;
+
+    coord->g_11 = 1.0;
+    coord->g_22 = 1.0;
+    coord->g_33 = 1.0;
+    coord->g_12 = 0.0;
+    coord->g_13 = 0.0;
+    coord->g_23 = 0.0;
+
+    coord->geometry();
+
 // Write fast output
 if (fast_output.enabled) {
   // Add monitor if necessary
