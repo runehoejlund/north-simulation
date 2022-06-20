@@ -18,7 +18,7 @@ class NORTH : public PhysicsModel {
     // Model parameters
     BoutReal kappa;      // Effective gravity
     BoutReal Dvort, Dn, DT;  // Diffusion 
-    BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_vort; // Characteristic times
+    BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort; // Characteristic times
     
     CylindricalBCs cylBCs; // Class containing methods which sets the ghost points at singularity (rho=0)
 
@@ -41,17 +41,17 @@ NORTH::NORTH(){}
 
 int NORTH::init(bool UNUSED(restart)) {
   auto& options = Options::root()["north"];
-  kappa = options["kappa"].withDefault(1e-3);
+  kappa = options["kappa"].withDefault(1.0e-3);
 
-  Dvort = options["Dvort"].withDefault(1e-2);
-  Dn = options["Dn"].withDefault(1e-2);
-  DT = options["DT"].withDefault(1e-2);
+  Dvort = options["Dvort"].withDefault(1.0e-2);
+  Dn = options["Dn"].withDefault(1.0e-2);
+  DT = options["DT"].withDefault(1.0e-2);
 
-  tau_source 	= options["tau_source"].withDefault(1);
-  tau_sink_vort 	= options["tau_sink_vort"].withDefault(1);
-  tau_wall_n = options["tau_wall_n"].withDefault(1);
-  tau_wall_T = options["tau_wall_n"].withDefault(1);
-  tau_wall_vort = options["tau_wall_n"].withDefault(1);
+  tau_source 	= options["tau_source"].withDefault(1.0);
+  tau_sink_vort 	= options["tau_sink_vort"].withDefault(1.0);
+  tau_wall_n = options["tau_wall_n"].withDefault(1.0);
+  tau_wall_T = options["tau_wall_T"].withDefault(1.0);
+  tau_wall_vort = options["tau_wall_vort"].withDefault(1.0);
 
 
 	initial_profile("source_n",  source_n);
@@ -192,8 +192,8 @@ int NORTH::sink() {
   // Sink terms
   mesh->communicate(n, vort, T);
   ddt(n) += -n*wall_shadow/tau_wall_n;
-  ddt(T) += -T/tau_sink-T*wall_shadow/tau_wall_T;
-  ddt(vort) += -vort*wall_shadow/tau_wall_vort;
+  ddt(T) += -T*wall_shadow/tau_wall_T;
+  ddt(vort) += -vort/tau_sink_vort-vort*wall_shadow/tau_wall_vort;
   
   return 0;
 }

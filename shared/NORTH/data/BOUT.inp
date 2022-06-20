@@ -109,8 +109,8 @@ bndry_all 	= neumann_o2
 # sigma_z = 0.7540
 # sigma_x = 0.01333
 
-sigma_z = 0.03/rho_s
-sigma_x = 0.005/rho_s
+sigma_z = 0.03/north:rho_s
+sigma_x = 0.005/north:rho_s
 
 # =============================================================================
 [n]
@@ -151,7 +151,7 @@ bndry_xout  = neumann_o2(0.0)   # Set to neumann
 #function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z-pi)^2/(2*all:sigma_z^2))
 
 scale       = 0.66
-function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R0 + x*cos(z)-north:R_res)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
+function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R + x*cos(z)-north:R_res)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
 
 [source_T]
 #scale       = 4
@@ -159,11 +159,11 @@ function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R0 + x*cos(z)-north:R
 # function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z-pi)^2/(2*all:sigma_z^2))
 
 scale       = 0.91
-function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R0 + x*cos(z)-north:R_res)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
+function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R + x*cos(z)-north:R_res)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
 
 [sink_T]
 scale       = 0.45
-function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R0 + x*cos(z)-north:R_res)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
+function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R + x*cos(z)-north:R_res)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
 
 
 [Wall_shadow]
@@ -171,7 +171,7 @@ scale         = 1
 # function    = exp((x-0.97)/0.03)/2.71828**2
 # function    = -1 + exp((x-0.5)^20/(1e-6) + (z-0.5/(2*pi))^20/(1e-6))
 # function    = -1 + exp((x-0.5)^20/(1e-6))*exp((z/(2*pi)-0.5)^20/(1e-6))
-function    = 0.5 + 0.5*tanh((x-(north:R_0/2 - north:rho_s))/(0.001))
+function    = 0.5 + 0.5*tanh((x-(north:R/2 - north:rho_s))/(0.001))
 
 
 [fast_output]
