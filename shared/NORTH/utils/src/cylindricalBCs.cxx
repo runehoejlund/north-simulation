@@ -4,6 +4,22 @@
 #include "../include/cylindricalBCs.hxx"
 #include <string>
 
+/*!
+ * \brief Constructor
+ *
+ * Constructor which sets the private member data
+ *
+ * \warning firstUpperYGhost and firstLowerGhost
+ *          should only be used for the processors using the respective
+ *          boundaries
+ */
+CylindricalBCs::CylindricalBCs() {
+  // yend = index value of last inner point on this processor
+  firstUpperYGhost = mesh->yend + 1;
+  // ystart = index value of first inner point on this processor
+  firstLowerYGhost = mesh->ystart - 1;
+}
+
 // Member functions
 /*!
  * Sets the inner x ghost points of a Field3D in cylindrical coordinates.
@@ -35,9 +51,7 @@
  *
  * \note We are also setting the inner x-y corner points
  */
-void OwnBCs::innerRhoCylinder(Field3D &f) {
-  TRACE("Halt in OwnBCs::innerRhoCylinder");
-
+void CylindricalBCs::innerRhoCylinder(Field3D &f) {
   if (mesh->firstX()) {
     // Set the boundary for the inner y points
     innerRhoCylinderLoop(f, mesh->ystart, mesh->yend);

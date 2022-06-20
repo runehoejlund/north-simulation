@@ -6,7 +6,7 @@
 # z - The azimuthal coordinate (theta)
 
 timestep 	= 10 		# Output timestep
-nout 		= 5 		# Number of output steps
+nout 		= 20 		# Number of output steps
 
 myg 		= 0		    # No need for Y communications
 mxg 		= 2 		# x-guard cells
@@ -18,12 +18,12 @@ nx 			= 256+2*mxg	# internal grid points plus guard cells along x-axis
 ny 			= 1+2*myg 	# y is along magnetic field, set to 1
 nz 			= 256 		# internal grid points along z-axis
 
-Lx 			= north:a/north:rho_s 		# simulation length along x-axis
-# Lz 			= north:R/north:rho_s 		# simulation length along z-axis
+Lx 			= north:R/north:rho_s 		# simulation length along x-axis
+Lz 			= north:R/north:rho_s 		# simulation length along z-axis
 
 dx 			= Lx/(nx-1-2*mxg)           # grid spacing along x-axis
 dy 			= 1.0                       # grid spacing along y-axis
-# dz 			= Lz/(nz-1)                 # grid spacing along z-axis
+dz 			= Lz/(nz-1)                 # grid spacing along z-axis
 
 # Set the z coordinate range
 ZMIN = 0.0

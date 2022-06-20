@@ -33,6 +33,10 @@
  */
 class CylindricalBCs {
 private:
+  // Data members
+  int firstUpperYGhost; //!< Given that the processor has a boundary
+  int firstLowerYGhost; //!< Given that the processor has a boundary
+
   // Member functions
   //! A function which loops over the inner boundary
   void innerRhoCylinderLoop(Field3D &the_field, const int &y_start,
@@ -41,7 +45,7 @@ private:
   BoutReal z; //!< The value of z at the current index
 public:
   // Constructors
-  // None
+  CylindricalBCs();
 
   // Destructors
   // Not needed as we have no dynamic memory allocation yet

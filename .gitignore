@@ -10,8 +10,9 @@ plots/**
 *.vscode
 
 # Data
-shared/NORTH/data/*
-!shared/NORTH/data/BOUT.inp
+BOUT*
+.BOUT*
+!BOUT.inp
 shared/NORTH/north
 shared/NORTH/north_full_ESEL
 
