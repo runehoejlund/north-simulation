@@ -2,7 +2,6 @@
 #define __CYLINDRICALBCS_H__
 
 #include <bout.hxx>           // Includes all necessary classes and types
-#include <bout/constants.hxx> // Gives PI and TWOPI
 #include <string>
 
 /*!
