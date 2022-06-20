@@ -103,24 +103,20 @@ int NORTH::init(bool UNUSED(restart)) {
 
     // Add points from the input file
     int i = 0;
-    BoutReal x1pos, x2pos, x3pos;
-    int ix, iy, iz;
     Options* fast_output_options = Options::getRoot()->getSection("fast_output");
     while (true) {
+      BoutReal xprobe;
+      int ix, iy, iz;
+
       // Add more points if explicitly set in input file
-      fast_output_options->get("x1pos"+std::to_string(i), x1pos, -1.);
-      fast_output_options->get("x2pos"+std::to_string(i), x2pos, -1.);
-      fast_output_options->get("x3pos"+std::to_string(i), x3pos, -1.);
-      if (x1pos<0. || x2pos<0. || x3pos<0.) {
+      fast_output_options->get("xprobe"+std::to_string(i), xprobe, -1.);
+      if (xprobe<0.) {
         output.write("\tAdded %i fast_output points\n", i);
         break;
       }
-      BoutReal xpos = sqrt(pow(x1pos, 2.0) + pow(x3pos, 2));    // rho
-      BoutReal ypos = x2pos;                    // In direction of B-field
-      BoutReal zpos = atan(x3pos/x1pos)/(2*PI);  // theta
-      ix = int(xpos*mesh->GlobalNx);
-      iy = int(ypos*mesh->GlobalNy);
-      iz = int(zpos*mesh->GlobalNz);
+      ix = int(xprobe*mesh->GlobalNx);
+      iy = 0;
+      iz = 0;
 
       // Add fields to be monitored
       fast_output.add("n"+std::to_string(i), n, ix, iy, iz);
