@@ -13,9 +13,11 @@ plots*
 BOUT*
 .BOUT*
 !BOUT.inp
-shared/NORTH/data/*
 shared/NORTH/north
 shared/NORTH/north_full_ESEL
+
+# CELMA-project
+shared/CELMA-master
 
 ###########################
 # Python

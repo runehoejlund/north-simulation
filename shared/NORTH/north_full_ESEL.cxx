@@ -4,6 +4,7 @@
 #include <derivs.hxx>
 #include <initialprofiles.hxx>
 #include "BoutFastOutput/fast_output.hxx"
+#include "./utils/include/cylindricalBCs.hxx"
 
 class NORTH : public PhysicsModel {
 public:
@@ -19,6 +20,8 @@ private:
   BoutReal Dvort, Dn, DT;  // Diffusion 
   BoutReal tau_source, tau_sink, tau_wall; // Characteristic times
   
+  CylindricalBCs cylBCs; // Class containing methods which sets the ghost points at singularity (rho=0)
+
   // Method to use: BRACKET_ARAKAWA, BRACKET_STD or BRACKET_SIMPLE
   BRACKET_METHOD bm; // Bracket method for advection terms
   
@@ -115,18 +118,21 @@ if (fast_output.enabled) {
 
   // Add points from the input file
   int i = 0;
-  BoutReal xpos, ypos, zpos;
+  BoutReal x1pos, x2pos, x3pos;
   int ix, iy, iz;
   Options* fast_output_options = Options::getRoot()->getSection("fast_output");
   while (true) {
     // Add more points if explicitly set in input file
-    fast_output_options->get("xpos"+std::to_string(i), xpos, -1.);
-    fast_output_options->get("ypos"+std::to_string(i), ypos, -1.);
-    fast_output_options->get("zpos"+std::to_string(i), zpos, -1.);
-    if (xpos<0. || ypos<0. || zpos<0.) {
+    fast_output_options->get("x1pos"+std::to_string(i), x1pos, -1.);
+    fast_output_options->get("x2pos"+std::to_string(i), x2pos, -1.);
+    fast_output_options->get("x3pos"+std::to_string(i), x3pos, -1.);
+    if (x1pos<0. || x2pos<0. || x3pos<0.) {
       output.write("\tAdded %i fast_output points\n", i);
       break;
     }
+    BoutReal xpos = sqrt(pow(x1pos, 2.0) + pow(x3pos, 2));    // rho
+    BoutReal ypos = x2pos;                    // In direction of B-field
+    BoutReal zpos = atan(x3pos/x1pos)/(2*PI);  // theta
     ix = int(xpos*mesh->GlobalNx);
     iy = int(ypos*mesh->GlobalNy);
     iz = int(zpos*mesh->GlobalNz);
@@ -142,7 +148,13 @@ if (fast_output.enabled) {
     return 0;
   }
   
-int NORTH::rhs(BoutReal t) {    
+int NORTH::rhs(BoutReal t) {
+  // Treat singularity at rho = 0
+  cylBCs.innerRhoCylinder(n);
+  cylBCs.innerRhoCylinder(T);
+  cylBCs.innerRhoCylinder(vort);
+  cylBCs.innerRhoCylinder(phi);
+
 	fields();
   interchange();     
   diffusive();     
