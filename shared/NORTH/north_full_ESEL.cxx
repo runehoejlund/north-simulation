@@ -13,12 +13,12 @@ class NORTH : public PhysicsModel {
   private:
     Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
     Field3D phi;      // Electrostatic potential
-    Field3D source_n, source_T, wall_shadow; // Density source, Temperature source
+    Field3D source_n, source_T, sink_T, wall_shadow; // Density source, Temperature source
 
     // Model parameters
     BoutReal kappa;      // Effective gravity
     BoutReal Dvort, Dn, DT;  // Diffusion 
-    BoutReal tau_source, tau_sink, tau_wall; // Characteristic times
+    BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_vort; // Characteristic times
     
     CylindricalBCs cylBCs; // Class containing methods which sets the ghost points at singularity (rho=0)
 
@@ -42,20 +42,26 @@ NORTH::NORTH(){}
 int NORTH::init(bool UNUSED(restart)) {
   auto& options = Options::root()["north"];
   kappa = options["kappa"].withDefault(1e-3);
+
   Dvort = options["Dvort"].withDefault(1e-2);
   Dn = options["Dn"].withDefault(1e-2);
   DT = options["DT"].withDefault(1e-2);
+
   tau_source 	= options["tau_source"].withDefault(1);
-  tau_sink 	= options["tau_sink"].withDefault(1);
-  tau_wall = options["tau_wall"].withDefault(1);
+  tau_sink_vort 	= options["tau_sink_vort"].withDefault(1);
+  tau_wall_n = options["tau_wall_n"].withDefault(1);
+  tau_wall_T = options["tau_wall_n"].withDefault(1);
+  tau_wall_vort = options["tau_wall_n"].withDefault(1);
+
 
 	initial_profile("source_n",  source_n);
   initial_profile("source_T",  source_T);
+  initial_profile("sink_T",  sink_T);
   initial_profile("wall_shadow",  wall_shadow);
 	
   SOLVE_FOR(T, vort, n);
   SAVE_REPEAT(phi);
-  SAVE_ONCE(source_n, source_T, wall_shadow);
+  SAVE_ONCE(source_n, source_T, sink_T, wall_shadow);
 
   phiSolver = Laplacian::create();
   phi = 0.; // Starting phi
@@ -139,7 +145,7 @@ int NORTH::rhs(BoutReal t) {
   diffusive();     
   source();
 	sink();
-  curvature(); // curvature operator C
+  curvature();
   if (fast_output.enabled){
       fast_output.monitor_method(t); // Store fast output in BOUT.fast.<processor_no.>
   }
@@ -189,9 +195,9 @@ int NORTH::source() {
 int NORTH::sink() {	
   // Sink terms
   mesh->communicate(n, vort, T);
-  ddt(n) += -n/tau_sink-n*wall_shadow/tau_wall;
-  ddt(T) += -T/tau_sink-T*wall_shadow/tau_wall;
-  ddt(vort) += -vort/tau_sink;
+  ddt(n) += -n*wall_shadow/tau_wall_n;
+  ddt(T) += -T/tau_sink-T*wall_shadow/tau_wall_T;
+  ddt(vort) += -vort*wall_shadow/tau_wall_vort;
   
   return 0;
 }
