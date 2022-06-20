@@ -2,8 +2,8 @@
 #SBATCH --mail-type=NONE
 #SBATCH --partition=xeon24
 #SBATCH -N 1 # Number of nodes
-#SBATCH -n 8 # Total number of tasks
-#SBATCH --time=0-06:00:00
+#SBATCH -n 12 # Total number of tasks
+#SBATCH --time=0-00:20:00
 #SBATCH --output=./slurm_out/north_full_ESEL_2.log
 #SBATCH --error=./slurm_out/north_full_ESEL_2_err.log
 
