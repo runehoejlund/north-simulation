@@ -1,0 +1,185 @@
+#
+# NORTH input file
+#
+# x - The radial coordinate (rho)
+# y - The height of the cylinder (z)
+# z - The azimuthal coordinate (theta)
+
+timestep 	= 10 		# Output timestep
+nout 		= 10 		# Number of output steps
+
+myg 		= 0		    # No need for Y communications
+mxg 		= 2 		# x-guard cells
+
+monitor_timestep = true
+
+[mesh]
+nx 			= 64+2*mxg	# internal grid points plus guard cells along x-axis
+ny 			= 1      	# y is along magnetic field, set to 1
+nz 			= 256 		# internal grid points along z-axis
+
+Lx 			= north:a/north:rho_s 		# simulation length along x-axis
+
+dx 			= Lx/(nx-1-2*mxg)           # grid spacing along x-axis
+dy 			= 1.0                       # grid spacing along y-axis
+
+# Set the z coordinate range in multiples of 2 pi
+ZMIN = 0.0
+ZMAX = 1.0 # So we will get: dz = 2*pi(ZMAX - ZMIN)/(nz-1)
+
+# The metrics
+xl          = (x * Lx)                  # x (rho)-coordinate in range [0,Lx]
+g33         = 1/(max(xl,1/(2*nx))^2)    # contravariant metric tensor component g^{33} (g^{theta theta})
+J           = max(xl,1/(2*nx))          # Jacobian (determinant)
+Bxy         = 1                         # Magnetic field in Clebsch form B = \grad z \cross \grad x: https://bout-dev.readthedocs.io/en/latest/user_docs/coordinates.html#id1
+
+# Puts the boundaries half a step outside the last gridpoints
+symmetricGlobalY=true
+symmetricGlobalX=true
+
+# Position of the separatrix
+# Points 0 <= x < ixseps1 are inside separatrix, ixseps1 <= x < ngx outside
+# --------Non-periodic----------
+ixseps1 = -1
+ixseps2 = -1
+# ------------------------------
+
+[mesh:ddx] 	# methods used for x derivative terms
+first  		= C4  		# d/dx (f)
+second 		= C4  		# d^2/dx^2 (f)
+upwind 		= W3  		# v_x d/dx (f)
+flux   		= U1  		# d/dx (v_x f)
+
+[mesh:ddy] 	# methods used for y derivative terms
+first  		= C4 		# d/dx (f)
+second 		= C4 		# d^2/dx^2 (f)
+upwind 		= W3 		# v_x d/dx (f)
+flux   		= U1 		# d/dx (v_x f)
+
+[mesh:ddz] 	# methods used for z derivative terms
+first  		= C4  		# d/dx (f)
+second 		= C4  		# d^2/dx^2 (f)
+upwind 		= W3  		# v_x d/dx (f)
+flux   		= U1  		# d/dx (v_x f)
+
+[laplace]
+flags = 0   # Flags for Laplacian inversion
+
+[solver]
+type 		= pvode
+
+[north]
+R 		= 0.250     # m, 	major radius 
+a 		= 0.125 	# m, 	minor radius
+n0 		= 1e16  	# m^-3, plasma density
+Te0 	= 10 		# eV, 	electron temperature
+B0 		= 0.077 	# T, 	magnetic field on axis
+R_res   = 0.219     # m     ECR radial position
+
+e 		= 1.60e-19 	# C
+mp		= 1.67e-27 	# kg
+N_nuclei       = 2         # Atom number (number of nuclei)
+
+oci 		= e*B0/(N_nuclei*mp) 		    # ion gyrofrequency
+rho_s 		= sqrt(2*e*Te0/(N_nuclei*mp))/oci   	# cold-ion hybrid thermal gyro-radius
+
+kappa 		    = rho_s/R 	    # Effective gravity.
+
+Dvort 		    = 10*2.2e-3	    # Vorticity diffusion
+Dn 		        = 10*10*7.6e-5 	   	# Density diffusion
+DT              = 10*10*7.6e-5        # Temperature diffusion
+
+tau_source	    = 3.66e2        # Source characteristic time
+tau_sink_vort	= 2.07e2        # Global sink characteristic time
+tau_wall_n      = 14.1          # Density wall shadow characteristic time
+tau_wall_Te     = 7.1           # Temperature wall shadow characteristic time
+tau_wall_vort   = 14.1          # Vorticity wall shadow characteristic time
+
+
+
+bracket 	= 2 		# 0 = std, 1 = simple, 2 = arakawa
+
+[All]
+scale 		= 1.
+bndry_all 	= neumann_o2
+
+# sigma_z 	= (0.05/2)/north:R
+# sigma_x 	= 0.1*sigma_z
+
+# sigma_z = 0.7540
+# sigma_x = 0.01333
+
+sigma_z = 0.03/north:a
+sigma_x = 0.005/north:a
+
+# =============================================================================
+[n]
+scale       	= 0.5
+# function 	= 1. + 0.2*mixmode(2*pi*x) * mixmode(z)
+# function    = exp(-(x-(north:a + 7.1e-3)/north:R)^2/(all:sigma_z^2))*exp(-(z/(2*pi)-0.5)^2/(2*all:sigma_z^2))
+function    = 1/(sqrt(2*pi)*all:sigma_z)*exp(-x^2/(2*all:sigma_z)^2)
+
+
+# Boundaries
+bndry_xin   = none              # Manual boundary found in code
+bndry_xout  = neumann_o2(0.0)   # Set to neumann
+# =============================================================================
+
+# =============================================================================
+[T]
+scale       	= 0.5
+function 	= 1. + 0.02*mixmode(2*pi*x) * mixmode(z)
+
+# Boundaries
+bndry_xin   = none              # Manual boundary found in code
+bndry_xout  = neumann_o2(0.0)   # Set to neumann
+# =============================================================================
+
+# =============================================================================
+[vort]
+scale       = 0.01
+function 	= mixmode(2*pi*x) * mixmode(z)
+
+# Boundaries
+bndry_xin   = none              # Manual boundary found in code
+bndry_xout  = neumann_o2(0.0)   # Set to neumann
+# =============================================================================
+
+[source_n]
+#scale       = 4
+# function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z/(2*pi)-0.5)^2/(2*all:sigma_z^2))
+#function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z-pi)^2/(2*all:sigma_z^2))
+
+scale       = 0.66
+function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R/north:a + x*cos(z)-north:R_res/north:a)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
+
+[source_T]
+#scale       = 4
+# function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z/(2*pi)-0.5)^2/(2*all:sigma_z^2))
+# function 	= 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(x-(north:a + 7.1e-3)/north:R)^2/(2*all:sigma_x^2))*exp(-(z-pi)^2/(2*all:sigma_z^2))
+
+scale       = 0.91
+function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R/north:a + x*cos(z)-north:R_res/north:a)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
+
+[sink_T]
+scale       = 0.45
+function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R + x*cos(z)-north:R_res)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
+
+
+[Wall_shadow]
+scale         = 1
+# function    = exp((x-0.97)/0.03)/2.71828**2
+# function    = -1 + exp((x-0.5)^20/(1e-6) + (z-0.5/(2*pi))^20/(1e-6))
+# function    = -1 + exp((x-0.5)^20/(1e-6))*exp((z/(2*pi)-0.5)^20/(1e-6))
+function    = 0.5 + 0.5*tanh((x-(north:a/north:a - north:rho_s/north:a))/(0.01))
+
+
+[fast_output]
+type = monitor
+frequency_multiplier = 100
+flush = false
+
+# Probes in cartesian coordinates
+xprobe0 = 0.80
+xprobe1 = 0.82
+xprobe2 = 0.84

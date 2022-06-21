@@ -210,13 +210,15 @@ int NORTH::curvature() {
 }
 
 Field3D NORTH::C(const Field3D &f) {
-  Vector2D zhat; // vertical unit vector (z-hat in toroidal coordinates)
+  Vector3D zhat; // vertical unit vector (z-hat in toroidal coordinates)
   zhat.covariant = false;
   zhat.x = 1.0;
   zhat.y = 0.0;
   zhat.z = PI/2.0;
 
   return kappa*V_dot_Grad(zhat, f);
+  
+ return 0*f;
 }
 
 // Define a main() function
