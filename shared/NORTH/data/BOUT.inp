@@ -86,8 +86,8 @@ rho_s 		= sqrt(2*e*Te0/(N_nuclei*mp))/oci   	# cold-ion hybrid thermal gyro-radi
 kappa 		    = rho_s/R 	    # Effective gravity.
 
 Dvort 		    = 2.2e-3	    # Vorticity diffusion
-Dn 		        = 7.6e-5 	   	# Density diffusion
-DT              = 7.6e-5        # Temperature diffusion
+Dn 		        = 10*7.6e-5 	   	# Density diffusion
+DT              = 10*7.6e-5        # Temperature diffusion
 
 tau_source	    = 3.66e2        # Source characteristic time
 tau_sink_vort	= 2.07e2        # Global sink characteristic time
