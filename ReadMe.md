@@ -162,3 +162,7 @@ scancel -u $USER
 ```
 scancel -t PD
 ```
+- Stop job gracefully (run file with `stopCheck=true` as is done in the slurm sbatch script), then add `BOUT.stop` file:
+```
+touch ./data/BOUT.stop
+```
