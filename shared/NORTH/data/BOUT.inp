@@ -14,9 +14,17 @@ mxg 		= 2 		# x-guard cells
 monitor_timestep = true
 
 [mesh]
-nx 			= 64+2*mxg	# internal grid points plus guard cells along x-axis
+nx 			= 80+2*mxg	# internal grid points plus guard cells along x-axis
 ny 			= 1      	# y is along magnetic field, set to 1
 nz 			= 256 		# internal grid points along z-axis
+
+# Number of processors. If running on e.g. xeon40,
+# we must have NXPE * NYPE = 40
+# Also, we must satisfy the constraints:
+# (nx - 2*mxg)/NXPE = integer, and
+# ny/NYPE = integer
+NXPE        = 40        # Number of processors in x-direction
+NYPE        = 1         # Number of processors in y-direction
 
 Lx 			= north:a/north:rho_s 		# simulation length along x-axis
 
@@ -85,7 +93,7 @@ rho_s 		= sqrt(2*e*Te0/(N_nuclei*mp))/oci   	# cold-ion hybrid thermal gyro-radi
 
 kappa 		    = rho_s/R 	    # Effective gravity.
 
-Dvort 		    = 2.2e-3	    # Vorticity diffusion
+Dvort 		    = 10*2.2e-3	    # Vorticity diffusion
 Dn 		        = 10*7.6e-5 	   	# Density diffusion
 DT              = 10*7.6e-5        # Temperature diffusion
 
