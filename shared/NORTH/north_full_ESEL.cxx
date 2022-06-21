@@ -14,7 +14,7 @@ class NORTH : public PhysicsModel {
   private:
     Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
     Field3D phi;      // Electrostatic potential
-    Field3D source_n, source_T, sink_T, wall_shadow; // Density source, Temperature source
+    Field3D source_n, source_T, sink_T, wall_shadow, unit_field, x_field, y_field, z_field; // Density source, Temperature source
 
     // Model parameters
     BoutReal kappa;      // Effective gravity
@@ -60,10 +60,14 @@ int NORTH::init(bool UNUSED(restart)) {
   initial_profile("source_T",  source_T);
   initial_profile("sink_T",  sink_T);
   initial_profile("wall_shadow",  wall_shadow);
+  initial_profile("unit_field",  unit_field);
+  initial_profile("x_field",  x_field);
+  initial_profile("y_field",  y_field);
+  initial_profile("z_field",  z_field);
 	
   SOLVE_FOR(T, vort, n);
   SAVE_REPEAT(phi);
-  SAVE_ONCE(source_n, source_T, sink_T, wall_shadow);
+  SAVE_ONCE(source_n, source_T, sink_T, wall_shadow, unit_field, x_field, y_field, z_field);
 
   phiSolver = Laplacian::create();
   phi = 0.; // Starting phi
@@ -210,13 +214,13 @@ int NORTH::curvature() {
 }
 
 Field3D NORTH::C(const Field3D &f) {
-  Vector2D zhat; // vertical unit vector (z-hat in toroidal coordinates)
+  /*Vector2D zhat; // vertical unit vector (z-hat in toroidal coordinates)
   zhat.covariant = false;
-  zhat.x = 1.0;
+  zhat.x = 1.0*unit_field;
   zhat.y = 0.0;
-  zhat.z = PI/2.0;
-
-  return kappa*V_dot_Grad(zhat, f);
+  zhat.z = PI/2.0*unit_field;
+  return kappa*V_dot_Grad(zhat, f);*/
+  return kappa*(sin(z_field)*DDX(f) + (cos(z_field)/x_field)*DDZ(f));
 }
 
 // Define a main() function
