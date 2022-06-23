@@ -1,10 +1,8 @@
-# BOUT_TOP = $(HOME)/Documents/DTU/BOUT-dev
 SOURCEC		= fast_output.cxx
 SOURCEH		= $(SOURCEC:%.cxx=%.hxx)
 MODULE_DIR      = ../
 SUB_NAME	= BoutFastOutput
 TARGET		= sub
 
-# BOUT_TOP = $(HOME)/BOUT-dev
-BOUT_TOP = $(MODULE_DIR)/../BOUT-dev
+BOUT_TOP = /home/niflheim/$(USER)/north-simulation/shared/BOUT-dev
 include $(BOUT_TOP)/make.config

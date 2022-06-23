@@ -4,7 +4,7 @@
 #include <derivs.hxx>
 #include <initialprofiles.hxx>
 #include "BoutFastOutput/fast_output.hxx"
-#include "./utils/include/cylindricalBCs.hxx"
+#include "./dependencies/utils/include/cylindricalBCs.hxx"
 #include <bout/constants.hxx> // Gives PI and TWOPI
 
 class NORTH : public PhysicsModel {
