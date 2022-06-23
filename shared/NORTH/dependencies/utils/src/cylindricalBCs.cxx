@@ -80,7 +80,7 @@ void CylindricalBCs::innerRhoCylinder(Field3D &f) {
  */
 void CylindricalBCs::innerRhoCylinderLoop(Field3D &f, const int &yStart,
                                   const int &yEnd) {
-  // For all z indices corresponding to a theta angle below pi
+  // Loop through all X and Y and all Z-points on the processor
   for (int xInd = 0; xInd < mesh->xstart; xInd++) {
     for (int yInd = yStart; yInd <= yEnd; yInd++) {
       for (int zInd = 0; zInd < mesh->LocalNz; zInd++) {
