@@ -118,9 +118,9 @@ int NORTH::init(bool UNUSED(restart)) {
 
     // Add points from the input file
     int i = 0;
+    BoutReal xprobe;
     Options* fast_output_options = Options::getRoot()->getSection("fast_output");
     while (true) {
-      BoutReal xprobe;
       int ix, iy, iz;
 
       // Add more points if explicitly set in input file
