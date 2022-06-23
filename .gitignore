@@ -9,6 +9,10 @@ plots*
 # VSCode
 *.vscode
 
+# makefiles
+shared/NORTH/makefile
+shared/NORTH/BoutFastOutput/makefile
+
 # Data
 BOUT*
 .BOUT*
