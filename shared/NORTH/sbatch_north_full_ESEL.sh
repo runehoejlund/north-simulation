@@ -22,12 +22,7 @@ cp ./BoutFastOutput /scratch/$USER/BoutFastOutput -r
 cp ./dependencies /scratch/$USER/dependencies -r
 cp north_full_ESEL.cxx /scratch/$USER
 cp makefile /scratch/$USER
-echo "scratch dir content before cd"
-echo $(ls /scratch/$USER/ -a)
 cd /scratch/$USER
-
-echo "scratch dir content after cd"
-echo $(ls ./ -a)
 
 # Compile and run
 make

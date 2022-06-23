@@ -12,7 +12,7 @@ plots*
 # Data
 BOUT*
 .BOUT*
-!BOUT.inp
+shared/NORTH/data/BOUT.inp
 shared/NORTH/north
 shared/NORTH/north_full_ESEL
 
