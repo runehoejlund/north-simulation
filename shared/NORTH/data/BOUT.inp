@@ -183,7 +183,7 @@ function    = 0.5 + 0.5*tanh((x-(north:a/north:a - north:rho_s/north:a))/(0.01))
 
 [cos_z_over_x]
 scale = 1
-function = 1.0*cos(z)/x
+function = 1.0*cos(z)/xl
 
 [sin_z_field]
 scale = 1
