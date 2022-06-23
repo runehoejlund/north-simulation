@@ -6,7 +6,7 @@
 # z - The azimuthal coordinate (theta)
 
 timestep 	= 5 		# Output timestep
-nout 		= 10 		# Number of output steps
+nout 		= 5 		# Number of output steps
 
 myg 		= 0		    # No need for Y communications
 mxg 		= 2 		# x-guard cells
@@ -80,16 +80,21 @@ type 		= pvode
 R 		= 0.250     # m, 	major radius 
 a 		= 0.125 	# m, 	minor radius
 n0 		= 1e16  	# m^-3, plasma density
-Te0 	= 10 		# eV, 	electron temperature
+Te0 	= 10.0 		# eV, 	electron temperature
 B0 		= 0.077 	# T, 	magnetic field on axis
 R_res   = 0.219     # m     ECR radial position
 
+E_ion   = 24.59/Te0 # absolute value of the Bohm normalized ionization energy
+n_n     = 1.2e19/n0 # Bohm normalized neutral number density
+
+
 e 		= 1.60e-19 	# C
 mp		= 1.67e-27 	# kg
-N_nuclei       = 2         # Atom number (number of nuclei)
+N_nuclei       = 2  # Atom number (number of nuclei)
 
-oci 		= e*B0/(N_nuclei*mp) 		    # ion gyrofrequency
-rho_s 		= sqrt(2*e*Te0/(N_nuclei*mp))/oci   	# cold-ion hybrid thermal gyro-radius
+oci 		= e*B0/(N_nuclei*mp) 		             # ion gyrofrequency
+rho_s 		= sqrt(2*e*Te0/(N_nuclei*mp))/oci   	 # cold-ion hybrid thermal gyro-radius
+c_s          = sqrt(Te0/(N_nuclei*mp))                # Cold-ion sound speed
 
 kappa 		    = rho_s/R 	    # Effective gravity.
 
@@ -169,11 +174,6 @@ function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R/north:a + x*cos(z)-
 scale       = 0.91
 function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R/north:a + x*cos(z)-north:R_res/north:a)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
 
-[sink_T]
-scale       = 0.45
-function    = 1/(2*pi*all:sigma_x*all:sigma_z)*exp(-(north:R + x*cos(z)-north:R_res)^2/(2*all:sigma_x^2))*exp(-(x*sin(z))^2/(2*all:sigma_z^2))
-
-
 [Wall_shadow]
 scale         = 1
 # function    = exp((x-0.97)/0.03)/2.71828**2
@@ -181,22 +181,13 @@ scale         = 1
 # function    = -1 + exp((x-0.5)^20/(1e-6))*exp((z/(2*pi)-0.5)^20/(1e-6))
 function    = 0.5 + 0.5*tanh((x-(north:a/north:a - north:rho_s/north:a))/(0.01))
 
-
-[unit_field]
+[cos_z_over_x]
 scale = 1
-function = 1.0
+function = 1.0*cos(z)/x
 
-[x_field]
+[sin_z_field]
 scale = 1
-function = 1.0*x
-
-[y_field]
-scale = 1
-function = 1.0*y
-
-[z_field]
-scale = 1
-function = 1.0*z
+function = 1.0*sin(z)
 
 
 [fast_output]

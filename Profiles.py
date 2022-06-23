@@ -21,8 +21,8 @@ from boututils.datafile import DataFile
 
 #%% Read data
 
-path        = './shared/NORTH/data'  
-field_list  = ['T', 'n', 'phi', 'vort', 'ZMIN','ZMAX', 'dx', 'dy', 'dz','source_n', 'Wall_shadow']
+path        = './shared/NORTH/data copy 7'  
+field_list  = ['T', 'n', 'phi', 'vort', 'ZMIN','ZMAX', 'dx', 'dy', 'dz','source_n', 'Wall_shadow', 'x_field', 'y_field', 'z_field']
 par_list    = ['t_array']
 fast_list   = ['t_array', 'n0', 'phi0', 'n1', 'phi1', 'n2', 'phi2', 'T0', 'T1', 'T2']
 

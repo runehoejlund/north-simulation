@@ -14,11 +14,17 @@ class NORTH : public PhysicsModel {
   private:
     Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
     Field3D phi;      // Electrostatic potential
-    Field3D source_n, source_T, sink_T, wall_shadow, unit_field, x_field, y_field, z_field; // Density source, Temperature source
+    Field3D source_n, source_T, wall_shadow, cos_z_over_x, sin_z_field; // Density source, Temperature source
 
     // Model parameters
-    BoutReal kappa;      // Effective gravity
-    BoutReal Dvort, Dn, DT;  // Diffusion 
+    BoutReal kappa;           // Effective gravity
+    BoutReal n_n;             // Neutral density
+    BoutReal E_ion;           // Ionization energy   
+    
+    BoutReal rho_s;           // Ion larmor radius
+    BoutReal c_s;              // Cold ion sound speed
+
+    BoutReal Dvort, Dn, DT;   // Diffusion 
     BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort; // Characteristic times
     
     CylindricalBCs cylBCs; // Class containing methods which sets the ghost points at singularity (rho=0)
@@ -30,6 +36,7 @@ class NORTH : public PhysicsModel {
     
     int fields(), interchange(), diffusive(), source(), sink(), curvature();
     Field3D C(const Field3D &f);
+    Field3D k_ionization(const Field3D &f);
     
     // Create object from FastOutput class
     FastOutput fast_output;
@@ -45,6 +52,9 @@ int NORTH::init(bool UNUSED(restart)) {
   auto& options = Options::root()["north"];
   kappa = options["kappa"].withDefault(1.0e-3);
 
+  n_n = options["n_n"].withDefault(1.0e3);
+  E_ion = options["E_ion"].withDefault(2.0);
+
   Dvort = options["Dvort"].withDefault(1.0e-2);
   Dn = options["Dn"].withDefault(1.0e-2);
   DT = options["DT"].withDefault(1.0e-2);
@@ -58,16 +68,15 @@ int NORTH::init(bool UNUSED(restart)) {
 
 	initial_profile("source_n",  source_n);
   initial_profile("source_T",  source_T);
-  initial_profile("sink_T",  sink_T);
   initial_profile("wall_shadow",  wall_shadow);
-  initial_profile("unit_field",  unit_field);
-  initial_profile("x_field",  x_field);
-  initial_profile("y_field",  y_field);
-  initial_profile("z_field",  z_field);
+  
+  initial_profile("cos_z_over_x",  cos_z_over_x);
+  initial_profile("sin_z_field",  sin_z_field);
+
 	
   SOLVE_FOR(T, vort, n);
   SAVE_REPEAT(phi);
-  SAVE_ONCE(source_n, source_T, sink_T, wall_shadow, unit_field, x_field, y_field, z_field);
+  SAVE_ONCE(source_n, source_T, wall_shadow, cos_z_over_x, sin_z_field);
 
   phiSolver = Laplacian::create();
   phi = 0.; // Starting phi
@@ -188,7 +197,7 @@ int NORTH::diffusive() {
 
 int NORTH::source() {
   // Source term
-  ddt(n) += source_n/tau_source;
+  ddt(n) += n_n*n*k_ionization(T);
   ddt(T) += source_T/tau_source;
   
   return 0;
@@ -198,11 +207,13 @@ int NORTH::sink() {
   // Sink terms
   mesh->communicate(n, vort, T);
   ddt(n) += -n*wall_shadow/tau_wall_n;
-  ddt(T) += -T*wall_shadow/tau_wall_T;
-  ddt(vort) += -vort/tau_sink_vort-vort*wall_shadow/tau_wall_vort;
+  ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)/n*k_ionization(T);
+  ddt(vort) += -vort*wall_shadow/tau_wall_vort -vort/tau_sink_vort;
   
   return 0;
 }
+
+
 
 int NORTH::curvature() {	
   // curvature terms
@@ -214,13 +225,13 @@ int NORTH::curvature() {
 }
 
 Field3D NORTH::C(const Field3D &f) {
-  /*Vector2D zhat; // vertical unit vector (z-hat in toroidal coordinates)
-  zhat.covariant = false;
-  zhat.x = 1.0*unit_field;
-  zhat.y = 0.0;
-  zhat.z = PI/2.0*unit_field;
-  return kappa*V_dot_Grad(zhat, f);*/
-  return kappa*(sin(z_field)*DDX(f) + (cos(z_field)/x_field)*DDZ(f));
+  return kappa*(sin_z_field*DDX(f) + cos_z_over_x*DDZ(f));
+}
+
+Field3D NORTH::k_ionization(const Field3D &f) {
+  //return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(pow(rho_s,2)*c_s);
+  return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(1.548);
+  //return 0*f;
 }
 
 // Define a main() function
