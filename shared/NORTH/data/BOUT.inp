@@ -199,9 +199,17 @@ frequency_multiplier = 100
 flush = false
 
 # Probes in cartesian coordinates
-xprobe0 = 0.05
-xprobe1 = 0.23
-xprobe2 = 0.41
-xprobe3 = 0.59
-xprobe4 = 0.77
-xprobe5 = 0.95
+#xprobe0 = 0.05
+#xprobe1 = 0.23
+#xprobe2 = 0.41
+#xprobe3 = 0.59
+#xprobe4 = 0.77
+#xprobe5 = 0.95
+
+
+xprobe0 = 0.0
+xprobe1 = 0.2
+xprobe2 = 0.4
+xprobe3 = 0.6
+xprobe4 = 0.8
+xprobe5 = 1.0

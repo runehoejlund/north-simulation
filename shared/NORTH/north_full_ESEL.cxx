@@ -22,7 +22,7 @@ class NORTH : public PhysicsModel {
     BoutReal E_ion;           // Ionization energy   
     
     BoutReal rho_s;           // Ion larmor radius
-    BoutReal oci;              // Cold ion sound speed
+    BoutReal oci;             // Ion cyclotron frequency
 
     BoutReal Dvort, Dn, DT;   // Diffusion 
     BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort; // Characteristic times
@@ -197,7 +197,7 @@ int NORTH::diffusive() {
 
 int NORTH::source() {
   // Source term
-  ddt(n) += n_n*n*k_ionization(T);
+  ddt(n) += 0.0*n_n*n*k_ionization(T);
   ddt(T) += source_T/tau_source;
   
   return 0;
@@ -207,7 +207,7 @@ int NORTH::sink() {
   // Sink terms
   mesh->communicate(n, vort, T);
   ddt(n) += -n*wall_shadow/tau_wall_n;
-  ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)/n*k_ionization(T);
+  ddt(T) += -T*wall_shadow/tau_wall_T - 0.0*(E_ion+T)/n*k_ionization(T);
   ddt(vort) += -vort*wall_shadow/tau_wall_vort -vort/tau_sink_vort;
   
   return 0;
