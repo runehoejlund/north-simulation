@@ -85,7 +85,7 @@ B0 		= 0.077 	# T, 	magnetic field on axis
 R_res   = 0.219     # m     ECR radial position
 
 E_ion   = 24.59/Te0 # absolute value of the Bohm normalized ionization energy
-n_n     = 1.2e19/n0 # Bohm normalized neutral number density
+n_n     = 1.2e19    # Bohm normalized neutral number density [m^-3]
 
 
 e 		= 1.60e-19 	# C

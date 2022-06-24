@@ -22,7 +22,7 @@ class NORTH : public PhysicsModel {
     BoutReal E_ion;           // Ionization energy   
     
     BoutReal rho_s;           // Ion larmor radius
-    BoutReal c_s;              // Cold ion sound speed
+    BoutReal oci;              // Cold ion sound speed
 
     BoutReal Dvort, Dn, DT;   // Diffusion 
     BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort; // Characteristic times
@@ -230,7 +230,7 @@ Field3D NORTH::C(const Field3D &f) {
 
 Field3D NORTH::k_ionization(const Field3D &f) {
   //return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(pow(rho_s,2)*c_s);
-  return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(1.548);
+  return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(oci);
   //return 0*f;
 }
 
