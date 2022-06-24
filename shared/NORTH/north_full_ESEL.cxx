@@ -14,7 +14,7 @@ class NORTH : public PhysicsModel {
   private:
     Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
     Field3D phi;      // Electrostatic potential
-    Field3D source_n, source_T, wall_shadow, cos_z_over_x, sin_z_field; // Density source, Temperature source
+    Field3D source_n, source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field; // Density source, Temperature source
 
     // Model parameters
     BoutReal kappa;           // Effective gravity
@@ -70,13 +70,13 @@ int NORTH::init(bool UNUSED(restart)) {
   initial_profile("source_T",  source_T);
   initial_profile("wall_shadow",  wall_shadow);
   
+  initial_profile("bracket_prefactor",  bracket_prefactor);
   initial_profile("cos_z_over_x",  cos_z_over_x);
   initial_profile("sin_z_field",  sin_z_field);
 
-	
   SOLVE_FOR(T, vort, n);
   SAVE_REPEAT(phi);
-  SAVE_ONCE(source_n, source_T, wall_shadow, cos_z_over_x, sin_z_field);
+  SAVE_ONCE(source_n, source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field);
 
   phiSolver = Laplacian::create();
   phi = 0.; // Starting phi
@@ -178,9 +178,9 @@ int NORTH::interchange() {
   mesh->communicate(n, vort, phi, T);
 
   // Convective transport
-  ddt(n) += -bracket(phi, n, bm) ;
-  ddt(T) += -bracket(phi, T, bm) ;
-  ddt(vort) += -bracket(phi, vort, bm) ;
+  ddt(n) += -bracket_prefactor * bracket(phi, n, bm) ;
+  ddt(T) += -bracket_prefactor * bracket(phi, T, bm) ;
+  ddt(vort) += -bracket_prefactor * bracket(phi, vort, bm) ;
   return 0;
 }
 
