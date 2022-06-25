@@ -6,7 +6,7 @@
 # z - The azimuthal coordinate (theta)
 
 timestep 	= 5 		# Output timestep
-nout 		= 50 		# Number of output steps
+nout 		= 100 		# Number of output steps
 
 myg 		= 0		    # No need for Y communications
 mxg 		= 2 		# x-guard cells
