@@ -35,7 +35,7 @@ FastOutput::FastOutput(Options* opt) {
     BoutReal output_timestep;
     global_options->get("timestep", output_timestep, 1.);
     int frequency_multiplier;
-    OPTION(options, frequency_multiplier, 10); // multiple of the output frequency to call fast_output at
+    OPTION(options, frequency_multiplier, 100); // multiple of the output frequency to call fast_output at
     setTimestep(output_timestep / double(frequency_multiplier));
   } else if (type == "timestep") {
     enable_timestep = true;

@@ -25,7 +25,7 @@ class NORTH : public PhysicsModel {
     BoutReal oci;             // Ion cyclotron frequency
 
     BoutReal Dvort, Dn, DT;   // Diffusion 
-    BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort; // Characteristic times
+    BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort, tau_common_sink; // Characteristic times
     
     CylindricalBCs cylBCs; // Class containing methods which sets the ghost points at singularity (rho=0)
 
@@ -54,6 +54,8 @@ int NORTH::init(bool UNUSED(restart)) {
 
   n_n = options["n_n"].withDefault(1.0e3);
   E_ion = options["E_ion"].withDefault(2.0);
+  rho_s = options["rho_s"].withDefault(1.0e3);
+  oci = options["oci"].withDefault(2.0);
 
   Dvort = options["Dvort"].withDefault(1.0e-2);
   Dn = options["Dn"].withDefault(1.0e-2);
@@ -64,7 +66,7 @@ int NORTH::init(bool UNUSED(restart)) {
   tau_wall_n = options["tau_wall_n"].withDefault(1.0);
   tau_wall_T = options["tau_wall_T"].withDefault(1.0);
   tau_wall_vort = options["tau_wall_vort"].withDefault(1.0);
-
+  tau_common_sink = options["tau_common_sink"].withDefault(1.0);
 
 	initial_profile("source_n",  source_n);
   initial_profile("source_T",  source_T);
@@ -206,8 +208,8 @@ int NORTH::source() {
 int NORTH::sink() {	
   // Sink terms
   mesh->communicate(n, vort, T);
-  ddt(n) += -n*wall_shadow/tau_wall_n;
-  ddt(T) += -T*wall_shadow/tau_wall_T - 0.0*(E_ion+T)/n*k_ionization(T);
+  ddt(n) += -n*wall_shadow/tau_wall_n-0.0*n/tau_common_sink;
+  ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)/n*k_ionization(T)-0.0*T/tau_common_sink;
   ddt(vort) += -vort*wall_shadow/tau_wall_vort -vort/tau_sink_vort;
   
   return 0;
