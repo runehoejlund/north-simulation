@@ -3,7 +3,7 @@
 #SBATCH --partition=xeon40
 #SBATCH -N 1 # Number of nodes
 #SBATCH -n 40 # Total number of tasks
-#SBATCH --time=0-00:40:00
+#SBATCH --time=0-09:00:00
 #SBATCH --output=./slurm_out/north_full_%j_ESEL.log
 #SBATCH --error=./slurm_out/north_full_%j_ESEL_err.log
 
