@@ -36,9 +36,15 @@ ZMIN = 0.0
 ZMAX = 1.0 # So we will get: dz = 2*pi(ZMAX - ZMIN)/(nz-1)
 
 # The metrics
-xl          = (x * Lx)                  # x (rho)-coordinate in range [0,Lx]
-g33         = 1/(max(xl,Lx/(2*nx))^2)    # contravariant metric tensor component g^{33} (g^{theta theta})
-J           = max(xl,Lx/(2*nx))          # Jacobian (determinant)
+xl          = (x * Lx)                  # x (r)-coordinate in range [0,Lx]
+xl_non_zero = max(xl,Lx/(2*nx))         # make sure xl is >0 when defining J and g22, g33
+sqrt_g_22 = (north:R/north:rho_s + xl_non_zero*cos(z))
+sqrt_g_33 = xl_non_zero
+g_22         = (sqrt_g_22)^2            # covariant metric tensor component g_{22} (g_{zeta zeta})
+g_33         = (sqrt_g_33)^2            # covariant metric tensor component g_{33} (g_{theta theta})
+g22         = 1/g_22
+g33         = 1/g_33                    # contravariant metric tensor component g^{33} (g^{theta theta})
+J           = sqrt_g_33*sqrt_g_33       # Jacobian (determinant)
 Bxy         = 1                         # Magnetic field in Clebsch form B = \grad z \cross \grad x: https://bout-dev.readthedocs.io/en/latest/user_docs/coordinates.html#id1
 
 # Puts the boundaries half a step outside the last gridpoints
