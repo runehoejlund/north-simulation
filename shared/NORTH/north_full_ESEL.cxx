@@ -4,7 +4,7 @@
 #include <derivs.hxx>
 #include <initialprofiles.hxx>
 #include "BoutFastOutput/fast_output.hxx"
-#include "./dependencies/utils/include/cylindricalBCs.hxx"
+#include "./dependencies/utils/include/toroidalBCs.hxx"
 #include <bout/constants.hxx> // Gives PI and TWOPI
 
 class NORTH : public PhysicsModel {
@@ -27,7 +27,7 @@ class NORTH : public PhysicsModel {
     BoutReal Dvort, Dn, DT;   // Diffusion 
     BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort, tau_common_sink; // Characteristic times
     
-    CylindricalBCs cylBCs; // Class containing methods which sets the ghost points at singularity (rho=0)
+    ToroidalBCs toroidalBCs; // Class containing methods which sets the ghost points at singularity (r=0)
 
     // Method to use: BRACKET_ARAKAWA, BRACKET_STD or BRACKET_SIMPLE
     BRACKET_METHOD bm; // Bracket method for advection terms
@@ -147,11 +147,11 @@ int NORTH::init(bool UNUSED(restart)) {
 }
   
 int NORTH::rhs(BoutReal t) {
-  // Treat singularity at rho = 0
-  cylBCs.innerRhoCylinder(n);
-  cylBCs.innerRhoCylinder(T);
-  cylBCs.innerRhoCylinder(vort);
-  cylBCs.innerRhoCylinder(phi);
+  // Treat singularity at r = 0
+  toroidalBCs.applyCenterBC(n);
+  toroidalBCs.applyCenterBC(T);
+  toroidalBCs.applyCenterBC(vort);
+  toroidalBCs.applyCenterBC(phi);
 
 	fields();
   interchange();     
