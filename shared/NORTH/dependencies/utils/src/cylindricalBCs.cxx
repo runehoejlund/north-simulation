@@ -41,7 +41,7 @@ CylindricalBCs::CylindricalBCs() {
  * current ghost point will be on the form
  *
  * ~~~{.cpp}
- * corresponding_xIndex = mesh->xstart + current_ghost_xIndex
+ * corresponding_xIndex = 2 * mesh->xstart - (current_ghost_x_index + 1)
  * corresponding_zIndex = (current_ghost_zIndex + mesh->LocalNz/2) % (mesh->LocalNz)
  * ~~~
  *
@@ -86,7 +86,7 @@ void CylindricalBCs::innerRhoCylinderLoop(Field3D &f, const int &yStart,
       for (int zInd = 0; zInd < mesh->LocalNz; zInd++) {
         // Set the value on the ghost point
         f(xInd, yInd, zInd) =
-            f(mesh->xstart + xInd, yInd, (zInd + (mesh->LocalNz / 2))%(mesh->LocalNz));
+            f(2 * mesh->xstart - (xInd + 1), yInd, (zInd + (mesh->LocalNz / 2))%(mesh->LocalNz));
       }
     }
   }

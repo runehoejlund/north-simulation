@@ -18,10 +18,11 @@
  * 
  * However, we (Asbjørn CLod Pedersen and
  * Rune Højlund, DTU Physics, 2022)
- * have changed the x-coordinates of
- * the innerRhoCylinderLoop()-function
- * since we believe to have found an error
- * in the previous implementation.
+ * have made a small change such that
+ * we use the modulus operator to
+ * match the Z-indexes. Also our class is
+ * simpler, since we don't need all the
+ * functionality from the original implementation.
  **************************************************************************
  * Original credit to Michael Løiten, DTU Physics, 2017
  *
