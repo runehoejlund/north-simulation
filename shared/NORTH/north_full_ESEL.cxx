@@ -199,8 +199,8 @@ int NORTH::diffusive() {
 
 int NORTH::source() {
   // Source term
-  ddt(n) += 0.0*n_n*n*k_ionization(T);
-  ddt(T) += source_T/tau_source;
+  ddt(n) += n_n*n*k_ionization(T);
+  ddt(T) += source_T/(tau_source*n);
   
   return 0;
 }
@@ -208,8 +208,8 @@ int NORTH::source() {
 int NORTH::sink() {	
   // Sink terms
   mesh->communicate(n, vort, T);
-  ddt(n) += -n*wall_shadow/tau_wall_n-0.0*n/tau_common_sink;
-  ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)/n*k_ionization(T)-0.0*T/tau_common_sink;
+  ddt(n) += -n*wall_shadow/tau_wall_n;
+  ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)/n*k_ionization(T);
   ddt(vort) += -vort*wall_shadow/tau_wall_vort -vort/tau_sink_vort;
   
   return 0;
@@ -227,7 +227,7 @@ int NORTH::curvature() {
 }
 
 Field3D NORTH::C(const Field3D &f) {
-  return kappa*(sin_z_field*DDX(f) + cos_z_over_x*DDZ(f));
+  return 1.0*kappa*(sin_z_field*DDX(f) + cos_z_over_x*DDZ(f));
 }
 
 Field3D NORTH::k_ionization(const Field3D &f) {
@@ -235,6 +235,16 @@ Field3D NORTH::k_ionization(const Field3D &f) {
   return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(oci);
   //return 0*f;
 }
+
+/*
+Field3D NORTH::max_n(const Field3D &f) {
+  if (f>0.05){
+    return f;
+  }
+  else{
+    return f;
+  }
+}*/
 
 // Define a main() function
 BOUTMAIN(NORTH);
