@@ -1,16 +1,16 @@
-#ifndef __CYLINDRICALBCS_H__
-#define __CYLINDRICALBCS_H__
+#ifndef __TOROIDALBCS_H__
+#define __TOROIDALBCS_H__
 
 #include <bout.hxx>           // Includes all necessary classes and types
 #include <string>
 
 /*!
- * \class CylindricalBCs
+ * \class ToroidalBCs
  *
- * \brief Class which has member functions to set ghost points in cylindrical geometry
+ * \brief Class which has member functions to set ghost points in toroidal geometry
  *
  * Class for proper treatment of singularity
- * in cylindrical coordinates at center: rho = 0.
+ * in toroidal coordinates at center: r = 0.
  * The code is almost one-to-one taken from the
  * OwnBCs-class from the CELMA-project:
  * https://celma-project.github.io/
@@ -31,7 +31,7 @@
  *
  * \date 2022.19.06
  */
-class CylindricalBCs {
+class ToroidalBCs {
 private:
   // Data members
   int firstUpperYGhost; //!< Given that the processor has a boundary
@@ -39,24 +39,24 @@ private:
 
   // Member functions
   //! A function which loops over the inner boundary
-  void innerRhoCylinderLoop(Field3D &the_field, const int &y_start,
+  void applyCenterBCLoop(Field3D &the_field, const int &y_start,
                             const int &y_end);
   BoutReal x; //!< The value of x at the current index
   BoutReal z; //!< The value of z at the current index
 public:
   // Constructors
-  CylindricalBCs();
+  ToroidalBCs();
 
   // Destructors
   // Not needed as we have no dynamic memory allocation yet
 
   // Member functions
-  //! Specify ghost at inner \f$\rho\f$
-  void innerRhoCylinder(Field3D &the_field);
+  //! Specify ghost at inner \f$\r\f$
+  void applyCenterBC(Field3D &the_field);
 };
 
 // Function bodies of the non-inlined functions are located in the .cxx file
-#include "../src/cylindricalBCs.cxx"
+#include "../src/toroidalBCs.cxx"
 
 #endif
 
