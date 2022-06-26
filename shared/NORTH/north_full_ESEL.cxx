@@ -14,7 +14,7 @@ class NORTH : public PhysicsModel {
   private:
     Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
     Field3D phi;      // Electrostatic potential
-    Field3D source_n, source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field; // Density source, Temperature source
+    Field3D source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field; // Density source, Temperature source
 
     // Model parameters
     BoutReal kappa;           // Effective gravity
@@ -68,7 +68,6 @@ int NORTH::init(bool UNUSED(restart)) {
   tau_wall_vort = options["tau_wall_vort"].withDefault(1.0);
   tau_common_sink = options["tau_common_sink"].withDefault(1.0);
 
-	initial_profile("source_n",  source_n);
   initial_profile("source_T",  source_T);
   initial_profile("wall_shadow",  wall_shadow);
   
@@ -78,7 +77,7 @@ int NORTH::init(bool UNUSED(restart)) {
 
   SOLVE_FOR(T, vort, n);
   SAVE_REPEAT(phi);
-  SAVE_ONCE(source_n, source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field);
+  SAVE_ONCE(source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field);
 
   phiSolver = Laplacian::create();
   phi = 0.; // Starting phi
