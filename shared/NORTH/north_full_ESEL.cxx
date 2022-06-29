@@ -23,6 +23,7 @@ class NORTH : public PhysicsModel {
     
     BoutReal rho_s;           // Ion larmor radius
     BoutReal oci;             // Ion cyclotron frequency
+    BoutReal n0;              // Reference density
 
     BoutReal Dvort, Dn, DT;   // Diffusion 
     BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort, tau_common_sink; // Characteristic times
@@ -56,6 +57,7 @@ int NORTH::init(bool UNUSED(restart)) {
   E_ion = options["E_ion"].withDefault(2.0);
   rho_s = options["rho_s"].withDefault(1.0e3);
   oci = options["oci"].withDefault(2.0);
+  n0 = options["n0"].withDefault(1.0e16);
 
   Dvort = options["Dvort"].withDefault(1.0e-2);
   Dn = options["Dn"].withDefault(1.0e-2);
@@ -208,7 +210,7 @@ int NORTH::sink() {
   // Sink terms
   mesh->communicate(n, vort, T);
   ddt(n) += -n*wall_shadow/tau_wall_n;
-  ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)/n*k_ionization(T);
+  ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)*n_n*k_ionization(T);
   ddt(vort) += -vort*wall_shadow/tau_wall_vort -vort/tau_sink_vort;
   
   return 0;
@@ -231,7 +233,7 @@ Field3D NORTH::C(const Field3D &f) {
 
 Field3D NORTH::k_ionization(const Field3D &f) {
   //return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(pow(rho_s,2)*c_s);
-  return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(oci);
+  return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)*n0/(oci);
   //return 0*f;
 }
 
