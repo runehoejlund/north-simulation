@@ -211,7 +211,7 @@ int NORTH::sink() {
   mesh->communicate(n, vort, T);
   ddt(n) += -n*wall_shadow/tau_wall_n;
   ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)*n_n*k_ionization(T);
-  ddt(vort) += -vort*wall_shadow/tau_wall_vort -vort/tau_sink_vort;
+  ddt(vort) += -vort*wall_shadow/tau_wall_vort;
   
   return 0;
 }
