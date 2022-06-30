@@ -91,12 +91,12 @@ B0 		= 0.077 	# T, 	magnetic field on axis
 R_res   = 0.219     # m     ECR radial position
 
 E_ion   = 24.59/Te0 # absolute value of the Bohm normalized ionization energy
-n_n     = 1.2e19    # Bohm normalized neutral number density [m^-3]
+n_n     = 1.2e19/n0    # Bohm normalized neutral number density [m^-3]
 
 
 e 		= 1.60e-19 	# C
 mp		= 1.67e-27 	# kg
-N_nuclei       = 2  # Atom number (number of nuclei)
+N_nuclei       = 4  # Atom number (number of nuclei)
 
 oci 		= e*B0/(N_nuclei*mp) 		             # ion gyrofrequency
 rho_s 		= sqrt(2*e*Te0/(N_nuclei*mp))/oci   	 # cold-ion hybrid thermal gyro-radius
