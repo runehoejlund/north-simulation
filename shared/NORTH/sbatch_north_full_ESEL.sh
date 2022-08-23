@@ -10,7 +10,6 @@
 # Set input and output directory
 IN_DIR=$PWD/data
 OUT_DIR=$PWD/data_$SLURM_JOB_ID
-mkdir -p $OUT_DIR
 
 # Load in modules
 module use ~/local/modules/modules/all
@@ -30,9 +29,10 @@ mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit
 # NOTE: Change IN_DIR if using restart and append=true
 #mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true restart append=true wall_limit = 2
 # NOTE: Use this to set flags for input parameters while running
-# mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false laplace:flags=0
+# mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit = 1 laplace:flags=0
 
 # When done: Move output files back to output directory
+mkdir -p $OUT_DIR
 mv /scratch/$USER/data/* $OUT_DIR
 
 # Clear cache
