@@ -15,6 +15,8 @@ class NORTH : public PhysicsModel {
     Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
     Field3D phi;      // Electrostatic potential
     Field3D source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field; // Density source, Temperature source
+    Field3D S_n, S_T, S_w; // Volume source/sink terms
+	Field3D n_bck, T_bck;
 
     // Model parameters
     BoutReal kappa;           // Effective gravity
@@ -24,9 +26,11 @@ class NORTH : public PhysicsModel {
     BoutReal rho_s;           // Ion larmor radius
     BoutReal oci;             // Ion cyclotron frequency
     BoutReal n0;              // Reference density
+	
+	bool recombination, ionization;
 
     BoutReal Dvort, Dn, DT;   // Diffusion 
-    BoutReal tau_source, tau_sink_vort, tau_wall_n, tau_wall_T, tau_wall_vort, tau_common_sink; // Characteristic times
+    BoutReal tau_source, tau_wall_n, tau_wall_T, tau_wall_vort; // Characteristic times
     
     ToroidalBCs toroidalBCs; // Class containing methods which sets the ghost points at singularity (r=0)
 
@@ -38,6 +42,7 @@ class NORTH : public PhysicsModel {
     int fields(), interchange(), diffusive(), source(), sink(), curvature();
     Field3D C(const Field3D &f);
     Field3D k_ionization(const Field3D &f);
+    Field3D k_recombination(const Field3D &f);
     
     // Create object from FastOutput class
     FastOutput fast_output;
@@ -64,12 +69,16 @@ int NORTH::init(bool UNUSED(restart)) {
   DT = options["DT"].withDefault(1.0e-2);
 
   tau_source 	= options["tau_source"].withDefault(1.0);
-  tau_sink_vort 	= options["tau_sink_vort"].withDefault(1.0);
   tau_wall_n = options["tau_wall_n"].withDefault(1.0);
   tau_wall_T = options["tau_wall_T"].withDefault(1.0);
   tau_wall_vort = options["tau_wall_vort"].withDefault(1.0);
-  tau_common_sink = options["tau_common_sink"].withDefault(1.0);
-
+  
+  recombination = options["recombination"].withDefault(true);
+  ionization = options["ionization"].withDefault(true);
+  
+  n_bck = options["n_bck"].withDefault(1.0e-2);
+  T_bck = options["T_bck"].withDefault(1.0e-2);
+  
   initial_profile("source_T",  source_T);
   initial_profile("wall_shadow",  wall_shadow);
   
@@ -154,11 +163,11 @@ int NORTH::rhs(BoutReal t) {
   toroidalBCs.applyCenterBC(vort);
   toroidalBCs.applyCenterBC(phi);
 
-	fields();
+  fields();
   interchange();     
   diffusive();     
   source();
-	sink();
+  sink();
   curvature();
   if (fast_output.enabled){
       fast_output.monitor_method(t); // Store fast output in BOUT.fast.<processor_no.>
@@ -187,6 +196,15 @@ int NORTH::interchange() {
   return 0;
 }
 
+int NORTH::curvature() {	
+  // curvature terms
+  mesh->communicate(n, vort, T, phi);
+  ddt(n) += (C(n*T)-n*C(phi));
+  ddt(T) += -2/3*T*C(phi) + 7/3*T*C(T) + 2/3*pow(T,2)/n*C(n);
+  ddt(vort) += C(n*T);
+  return 0;
+}
+
 int NORTH::diffusive() {
   // Communicate variables
   mesh->communicate(n, vort, T);
@@ -199,9 +217,26 @@ int NORTH::diffusive() {
 } 
 
 int NORTH::source() {
-  // Source term
-  ddt(n) += n_n*n*k_ionization(T);
-  ddt(T) += source_T/(tau_source*n);
+  // Volumen source term
+  S_n = 0;
+  S_T = 0;
+  
+  if (ionization){
+	S_n += n_n*n*k_ionization(T);
+	S_T -= (E_ion+T)*n_n*k_ionization(T);
+  }
+
+  if(recombination){
+	S_n -= n*n*k_recombination(T);
+  }
+  
+  S_w = - S_n*C(phi) - bracket_prefactor * bracket(phi, S_n, bm);
+  
+  ddt(n) += S_n;
+  ddt(T) += S_T;
+  ddt(vort) += S_w;
+  
+  ddt(T) += source_T/(tau_source*n); // Heating source
   
   return 0;
 }
@@ -209,21 +244,14 @@ int NORTH::source() {
 int NORTH::sink() {	
   // Sink terms
   mesh->communicate(n, vort, T);
-  ddt(n) += -n*wall_shadow/tau_wall_n;
-  ddt(T) += -T*wall_shadow/tau_wall_T - (E_ion+T)*n_n*k_ionization(T);
-  ddt(vort) += -vort*wall_shadow/tau_wall_vort;
   
-  return 0;
-}
-
-
-
-int NORTH::curvature() {	
-  // curvature terms
-  mesh->communicate(n, vort, T, phi);
-  ddt(n) += (C(n*T)-n*C(phi));
-  ddt(T) += -2/3*T*C(phi) + 7/3*T*C(T) + 2/3*pow(T,2)/n*C(n);
-  ddt(vort) += C(n*T);
+  ddt(n) -= (n-n_bck)*wall_shadow/tau_wall_n;
+  ddt(T) -= (T-T_bck)*wall_shadow/tau_wall_T;
+  ddt(vort) -= vort*wall_shadow/tau_wall_vort;
+  
+  // Artificial global vorticity sink
+  ddt(vort) -= 0.1*vort/tau_wall_vort;
+  
   return 0;
 }
 
@@ -235,6 +263,10 @@ Field3D NORTH::k_ionization(const Field3D &f) {
   //return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)/(pow(rho_s,2)*c_s);
   return 2.0e-13*pow(f/E_ion, 0.5)/(6.0 + f/E_ion)*exp(-E_ion/f)*n0/(oci);
   //return 0*f;
+}
+
+Field3D NORTH::k_recombination(const Field3D &f) {
+  return 7.0e-20*pow(E_ion/f, 0.5)*n0/(oci);
 }
 
 /*
