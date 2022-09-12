@@ -250,7 +250,7 @@ int NORTH::sink() {
   ddt(vort) -= vort*wall_shadow/tau_wall_vort;
   
   // Artificial global vorticity sink
-  ddt(vort) -= 0.1*vort/tau_wall_vort;
+  ddt(vort) -= vort/tau_wall_vort;
   
   return 0;
 }

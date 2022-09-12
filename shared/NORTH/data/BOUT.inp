@@ -14,7 +14,7 @@ mxg 		= 2 		# x-guard cells
 monitor_timestep = true
 
 [mesh]
-nx 			= 80+2*mxg	# internal grid points plus guard cells along x-axis
+nx 			= 48+2*mxg	# internal grid points plus guard cells along x-axis
 ny 			= 1      	# y is along magnetic field, set to 1
 nz 			= 128 		# internal grid points along z-axis
 
@@ -23,7 +23,7 @@ nz 			= 128 		# internal grid points along z-axis
 # Also, we must satisfy the constraints:
 # (nx - 2*mxg)/NXPE = integer, and
 # ny/NYPE = integer
-NXPE        = 40         #Number of processors in x-direction
+NXPE        = 24         #Number of processors in x-direction
 NYPE        = 1         # Number of processors in y-direction
 
 Lx 			= north:a/north:rho_s 		# simulation length along x-axis
@@ -111,8 +111,9 @@ DT              = 100*7.6e-5        # Temperature diffusion
 
 tau_source	    = 3.66e2        # Source characteristic time
 tau_wall_n      = (pi*north:R/north:c_s)*north:oci          # Density wall shadow characteristic time
-tau_wall_Te     = (pi*north:R/north:c_s)*north:oci           # Temperature wall shadow characteristic time
-tau_wall_vort   = (pi*north:R/north:c_s)*north:oci          # Vorticity wall shadow characteristic time
+tau_wall_Te     = (pi*north:R/north:c_s)*north:oci          # Temperature wall shadow characteristic time
+vort_sink_strength = 0.1                                    # Relative strength of vorticity sink
+tau_wall_vort   = (pi*north:R/north:c_s)*north:oci/vort_sink_strength          # Vorticity wall shadow characteristic time
 
 n_bck  = 0.01
 T_bck  = 1.133986420/north:Te0
