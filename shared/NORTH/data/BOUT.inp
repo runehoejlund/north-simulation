@@ -36,7 +36,7 @@ ZMIN = 0.0
 ZMAX = 1.0 # So we will get: dz = 2*pi(ZMAX - ZMIN)/(nz-1)
 
 # The metrics
-xl          = (x * Lx)                  # x (r)-coordinate in range [0,Lx]
+xl          = (x * Lx)                  # x (r)-coordinate in range (0,Lx)
 xl_non_zero = max(xl,Lx/(2*nx))         # make sure xl is >0 when defining J and g22, g33
 sqrt_g_22 = (north:R/north:rho_s + xl_non_zero*cos(z))
 sqrt_g_33 = xl_non_zero
@@ -83,25 +83,25 @@ flags = 0   # Flags for Laplacian inversion
 type 		= pvode
 
 [north]
-R 		= 0.250     # [m], 	major radius 
-a 		= 0.125 	# [m], 	minor radius
-n0 		= 1e16  	# [m^-3], plasma density
-Te0 	= 10.0 		# [eV], 	electron temperature
-B0 		= 0.077 	# [T], 	magnetic field on axis
-R_res   = 0.219     # [m]     ECR radial position
+R 		= 0.250     # (m), 	major radius 
+a 		= 0.125 	# (m), 	minor radius
+n0 		= 1e16  	# (m^-3), plasma density
+Te0 	= 10.0 		# (eV), 	electron temperature
+B0 		= 0.077 	# (T), 	magnetic field on axis
+R_res   = 0.219     # (m)     ECR radial position
 
 E_ion   = 24.59/Te0 # absolute value of the Bohm normalized ionization energy
-n_n     = 1.2e19/n0    # Bohm normalized neutral number density [m^-3]
+n_n     = 1.2e19/n0    # Bohm normalized neutral number density (m^-3)
 
 
-e 		= 1.60e-19 	# [C]
-mp		= 1.67e-27 	# [kg]
+e 		= 1.60e-19 	# (C)
+mp		= 1.67e-27 	# (kg)
 atomic_mass_number       = 4  # Atomic mass number (for He)
-mi      = atomic_mass_number*mp      # [kg]
+mi      = atomic_mass_number*mp      # (kg)
 
-oci 		= e*B0/(mi) 		            # ion gyrofrequency [s^-1]
+oci 		= e*B0/(mi) 		            # ion gyrofrequency (s^-1)
 rho_s 		= sqrt(2*e*Te0/(mi))/oci   	    # cold-ion hybrid thermal gyro-radius 
-c_s          = sqrt(Te0*e/(mi))             # Cold-ion sound speed [m/s]
+c_s          = sqrt(Te0*e/(mi))             # Cold-ion sound speed (m/s)
 
 kappa 		    = rho_s^2/(R*a) 	    # Effective gravity.
 
