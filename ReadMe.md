@@ -15,7 +15,12 @@ cd ./north-simulation
 ```
 . ./install_bout_env_niflheim.sh north-simulation
 ```
-3. Navigate to the shared directory and clone and compile the Bout-dev git (make sure the path `~/north-simulation` equals the path to the repo directory):
+3. Install python-requirements to the python venv with pip:
+```
+. ~/local/venv/north-simulation/bin/activate
+pip install -r requirements.txt
+```
+4. Navigate to the shared directory and clone and compile the Bout-dev git (make sure the path `~/north-simulation` equals the path to the repo directory):
 ```
 module restore bout
 cd ~/north-simulation/shared
@@ -146,6 +151,10 @@ here are some usefull commands. If you're on your personal computer, I assume yo
 ```
 
 ### Niflheim: Slurm Commands
+- Before running the sbatch script: Navigate to `shared/NORTH/`. In there, create a directory for output logs:
+```
+mkdir slurm_out
+```
 - Submit batch job (look at Slurm Batch job script in `shared/NORTH/` for how to write a sbatch file):
 ```
 sbatch sbatch_north_full_ESEL.sh
