@@ -23,7 +23,7 @@ nz 			= 128 		# internal grid points along z-axis
 # Also, we must satisfy the constraints:
 # (nx - 2*mxg)/NXPE = integer, and
 # ny/NYPE = integer
-NXPE        = 4         #Number of processors in x-direction
+NXPE        = 40         #Number of processors in x-direction
 NYPE        = 1         # Number of processors in y-direction
 
 Lx 			= north:a/north:rho_s 		# simulation length along x-axis
@@ -83,24 +83,25 @@ flags = 0   # Flags for Laplacian inversion
 type 		= pvode
 
 [north]
-R 		= 0.250     # m, 	major radius 
-a 		= 0.125 	# m, 	minor radius
-n0 		= 1e16  	# m^-3, plasma density
-Te0 	= 10.0 		# eV, 	electron temperature
-B0 		= 0.077 	# T, 	magnetic field on axis
-R_res   = 0.219     # m     ECR radial position
+R 		= 0.250     # [m], 	major radius 
+a 		= 0.125 	# [m], 	minor radius
+n0 		= 1e16  	# [m^-3], plasma density
+Te0 	= 10.0 		# [eV], 	electron temperature
+B0 		= 0.077 	# [T], 	magnetic field on axis
+R_res   = 0.219     # [m]     ECR radial position
 
 E_ion   = 24.59/Te0 # absolute value of the Bohm normalized ionization energy
 n_n     = 1.2e19/n0    # Bohm normalized neutral number density [m^-3]
 
 
-e 		= 1.60e-19 	# C
-mp		= 1.67e-27 	# kg
-N_nuclei       = 4  # Atom number (number of nuclei)
+e 		= 1.60e-19 	# [C]
+mp		= 1.67e-27 	# [kg]
+atomic_mass_number       = 4  # Atomic mass number (for He)
+mi      = atomic_mass_number*mp      # [kg]
 
-oci 		= e*B0/(N_nuclei*mp) 		             # ion gyrofrequency
-rho_s 		= sqrt(2*e*Te0/(N_nuclei*mp))/oci   	 # cold-ion hybrid thermal gyro-radius
-c_s          = sqrt(Te0*e/(N_nuclei*mp))                # Cold-ion sound speed
+oci 		= e*B0/(mi) 		            # ion gyrofrequency [s^-1]
+rho_s 		= sqrt(2*e*Te0/(mi))/oci   	    # cold-ion hybrid thermal gyro-radius 
+c_s          = sqrt(Te0*e/(mi))             # Cold-ion sound speed [m/s]
 
 kappa 		    = rho_s^2/(R*a) 	    # Effective gravity.
 
