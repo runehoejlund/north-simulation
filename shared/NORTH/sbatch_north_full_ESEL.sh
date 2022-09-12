@@ -1,9 +1,10 @@
 #!/bin/bash
+#SBATCH --job-name=vort_100
 #SBATCH --mail-type=NONE
 #SBATCH --partition=xeon24
 #SBATCH -N 1 # Number of nodes
 #SBATCH -n 24 # Total number of tasks
-#SBATCH --time=0-01:10:00
+#SBATCH --time=0-08:10:00
 #SBATCH --output=./slurm_out/north_full_%j_ESEL.log
 #SBATCH --error=./slurm_out/north_full_%j_ESEL_err.log
 
@@ -29,11 +30,11 @@ cd /scratch/$USER
 # Compile and run
 make
 
-mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit = 1
+# mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit = 2
 # NOTE: Change IN_DIR if using restart and append=true
-# mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true restart append=true wall_limit = 8
+# mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true restart append=true wall_limit = 2
 # NOTE: Use this to set flags for input parameters while running
-# mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit = 1 laplace:flags=0
+mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit = 8 north:vort_sink_strength=100
 
 # When done: Move output files back to output directory
 mkdir -p $OUT_DIR
