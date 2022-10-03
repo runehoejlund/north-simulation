@@ -91,7 +91,7 @@ B0 		= 0.077 	# (T), 	magnetic field on axis
 R_res   = 0.219     # (m)     ECR radial position
 
 E_ion   = 24.59/Te0 # absolute value of the Bohm normalized ionization energy
-n_n     = 1.2e19/n0    # Bohm normalized neutral number density (m^-3)
+n_n     = 1.2e19/n0    # Bohm normalized neutral number density
 
 
 e 		= 1.60e-19 	# (C)
@@ -100,8 +100,8 @@ atomic_mass_number       = 4  # Atomic mass number (for He)
 mi      = atomic_mass_number*mp      # (kg)
 
 oci 		= e*B0/(mi) 		            # ion gyrofrequency (s^-1)
-rho_s 		= sqrt(2*e*Te0/(mi))/oci   	    # cold-ion hybrid thermal gyro-radius 
 c_s          = sqrt(Te0*e/(mi))             # Cold-ion sound speed (m/s)
+rho_s 		= c_s/oci   	    # cold-ion hybrid thermal gyro-radius 
 
 kappa 		    = rho_s^2/(R*a) 	    # Effective gravity.
 
@@ -204,7 +204,7 @@ scale         = 1
 
 # function    = 0.5 + 0.5*tanh((x-(north:a/north:a - north:rho_s/north:a))/(0.025))
 
-width = north:rho_s #0.01
+width = north:rho_s
 
 function    = exp((x-1)/(width/north:a))
 

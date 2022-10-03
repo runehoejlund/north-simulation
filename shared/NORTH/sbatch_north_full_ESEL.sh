@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=vort_100
+#SBATCH --job-name=vort_10
 #SBATCH --mail-type=NONE
 #SBATCH --partition=xeon24
 #SBATCH -N 1 # Number of nodes
@@ -19,6 +19,12 @@ module purge
 module use ~/local/modules/modules/all
 module restore bout
 
+# # Reconfigure Bout-Dev
+# cd ../BOUT-dev/
+# ./configure
+# make
+# cd ../NORTH/
+
 # Copy all necessary files to scratch folder
 cp $IN_DIR /scratch/$USER/data -r
 cp ./BoutFastOutput /scratch/$USER/BoutFastOutput -r
@@ -34,7 +40,7 @@ make
 # NOTE: Change IN_DIR if using restart and append=true
 # mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true restart append=true wall_limit = 2
 # NOTE: Use this to set flags for input parameters while running
-mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit = 8 north:vort_sink_strength=100
+mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit = 8 north:vort_sink_strength=10
 
 # When done: Move output files back to output directory
 mkdir -p $OUT_DIR
