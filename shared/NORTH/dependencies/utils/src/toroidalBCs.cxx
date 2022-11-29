@@ -14,6 +14,7 @@
  *          boundaries
  */
 ToroidalBCs::ToroidalBCs() {
+  piIndex = mesh->LocalNz / 2;
   // yend = index value of last inner point on this processor
   firstUpperYGhost = mesh->yend + 1;
   // ystart = index value of first inner point on this processor
@@ -80,13 +81,35 @@ void ToroidalBCs::applyCenterBC(Field3D &f) {
  */
 void ToroidalBCs::applyCenterBCLoop(Field3D &f, const int &yStart,
                                   const int &yEnd) {
-  // Loop through all X and Y and all Z-points on the processor
+  // // Loop through all X and Y and all Z-points on the processor
+  // for (int xInd = 0; xInd < mesh->xstart; xInd++) {
+  //   for (int yInd = yStart; yInd <= yEnd; yInd++) {
+  //     for (int zInd = 0; zInd < mesh->LocalNz; zInd++) {
+  //       // Set the value on the ghost point
+  //       f(xInd, yInd, zInd) =
+  //           f(2 * mesh->xstart - (xInd + 1), yInd, (zInd + (mesh->LocalNz / 2))%(mesh->LocalNz));
+  //     }
+  //   }
+  // }
+
+  // For all z indices corresponding to a theta angle below pi
   for (int xInd = 0; xInd < mesh->xstart; xInd++) {
     for (int yInd = yStart; yInd <= yEnd; yInd++) {
-      for (int zInd = 0; zInd < mesh->LocalNz; zInd++) {
+      for (int zInd = 0; zInd < piIndex; zInd++) {
         // Set the value on the ghost point
         f(xInd, yInd, zInd) =
-            f(2 * mesh->xstart - (xInd + 1), yInd, (zInd + (mesh->LocalNz / 2))%(mesh->LocalNz));
+            f(2 * mesh->xstart - (xInd + 1), yInd, zInd + piIndex);
+      }
+    }
+  }
+  // For all z indices corresponding to a theta value including and above
+  // pi
+  for (int xInd = 0; xInd < mesh->xstart; xInd++) {
+    for (int yInd = yStart; yInd <= yEnd; yInd++) {
+      for (int zInd = piIndex; zInd < mesh->LocalNz; zInd++) {
+        // Set the value on the ghost point
+        f(xInd, yInd, zInd) =
+            f(2 * mesh->xstart - (xInd + 1), yInd, zInd - piIndex);
       }
     }
   }
