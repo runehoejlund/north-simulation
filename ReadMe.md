@@ -1,5 +1,5 @@
 # North Simulation
-Numerical model for a magnetically confined plasma in the NORTH tokamak. Note: The bout++ model was developed at DTU Physics by the Plasma Physics and Fusion Energy group. We use [BOUT++](http://boutproject.github.io/) for numerical simulation.
+Numerical model for a magnetically confined plasma in the NORTH tokamak. We use [BOUT++](http://boutproject.github.io/) for numerical simulation. Note: The bout++ model was developed at DTU Physics by the Plasma Physics and Fusion Energy group.
 
 ## Getting started
 ---------------------------------------------------------
@@ -44,6 +44,52 @@ make
 ``` 
 ./north_full_ESEL
 ```
+**NOTE:** The command above starts simulations directly on the node, which is not recommended (but it's useful for verifying that the code will evens start running). Instead you should queue the simulations using slurm:
+
+### Niflheim: Slurm Commands
+I've included the script `./shared/NORTH/sbatch_north_full_ESEL.sh` which takes care of queuing simulations using SLURM. Here is how to do it:
+- Before running the sbatch script: Navigate to `shared/NORTH/`. In there, create a directory for output logs:
+```
+mkdir slurm_out
+```
+- Submit batch job (look at Slurm Batch job script in `shared/NORTH/` for how to write a sbatch file):
+```
+sbatch sbatch_north_full_ESEL.sh
+```
+- show your queue
+```
+squeue -u $USER
+```
+- Cancel all your jobs:
+```
+scancel -u $USER
+```
+- Cancel all pending jobs:
+```
+scancel -t PD
+```
+- Stop job gracefully (run file with `stopCheck=true` as is done in the slurm sbatch script), then add `BOUT.stop` file:
+```
+touch ./data/BOUT.stop
+```
+
+### Niflheim/VSCode: Trouble-Shooting
+**bash: fork: retry: No child processes**
+
+If VSCode causes a [fork bomb](https://stackoverflow.com/questions/47143093/linux-ssh-bash-fork-retry-no-child-processes) with the error message: `bash: fork: retry: No child processes`, simply open up a terminal and write
+```
+kill -9 -1
+```
+
+**Python Interpreter Problems**
+
+If the VSCode Python Extension won't recognize your Python Interpreter. Pressing cmd/ctrl + shift P with the following command names are useful:
+- `Python: Create Terminal`
+- `Python: Run Python File in Terminal`
+- `Python: Select Interpreter` > Enter Interpreter Path (e.g. `~/local/venv/north-simulation/bin/python`). If this doesn't work:
+- `Python: Clear Workspace Interpreter Settings`
+
+Alternatively, try downgrading the Python Extension by going to Extensions > Python (SSH - Installed, not Local - Installed) > click the down arrow next to the uninstall button and choose "Install another version" > 2022.18.2
 
 ---------------------------------------------------------
 ### Personal Computer: First time setup
@@ -148,30 +194,4 @@ here are some usefull commands. If you're on your personal computer, I assume yo
 - Help on command line options
 ```
 ./north_full_ESEL -h
-```
-
-### Niflheim: Slurm Commands
-- Before running the sbatch script: Navigate to `shared/NORTH/`. In there, create a directory for output logs:
-```
-mkdir slurm_out
-```
-- Submit batch job (look at Slurm Batch job script in `shared/NORTH/` for how to write a sbatch file):
-```
-sbatch sbatch_north_full_ESEL.sh
-```
-- show your queue
-```
-squeue -u $USER
-```
-- Cancel all your jobs:
-```
-scancel -u $USER
-```
-- Cancel all pending jobs:
-```
-scancel -t PD
-```
-- Stop job gracefully (run file with `stopCheck=true` as is done in the slurm sbatch script), then add `BOUT.stop` file:
-```
-touch ./data/BOUT.stop
 ```
