@@ -13,7 +13,7 @@ class NORTH : public PhysicsModel {
     
   private:
     Field3D n, vort, T;  // Evolving density, vorticity and electron temperature
-    Field3D phi;      // Electrostatic potential
+    Field3D phi, B;      // Electrostatic potential and B-field
     Field3D source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field; // Density source, Temperature source
     Field3D S_n, S_T, S_w; // Volume source/sink terms
 	Field3D n_bck, T_bck;
@@ -30,7 +30,7 @@ class NORTH : public PhysicsModel {
 	bool recombination, ionization;
 
     BoutReal Dvort, Dn, DT;   // Diffusion 
-    BoutReal tau_source, tau_wall_n, tau_wall_T, tau_wall_vort; // Characteristic times
+    BoutReal tau_source, tau_wall_n, tau_wall_T; // Characteristic times
     
     ToroidalBCs toroidalBCs; // Class containing methods which sets the ghost points at singularity (r=0)
 
@@ -71,7 +71,6 @@ int NORTH::init(bool UNUSED(restart)) {
   tau_source 	= options["tau_source"].withDefault(1.0);
   tau_wall_n = options["tau_wall_n"].withDefault(1.0);
   tau_wall_T = options["tau_wall_T"].withDefault(1.0);
-  tau_wall_vort = options["tau_wall_vort"].withDefault(1.0);
   
   recombination = options["recombination"].withDefault(true);
   ionization = options["ionization"].withDefault(true);
@@ -79,6 +78,7 @@ int NORTH::init(bool UNUSED(restart)) {
   n_bck = options["n_bck"].withDefault(1.0e-2);
   T_bck = options["T_bck"].withDefault(1.0e-2);
   
+  initial_profile("B", B);
   initial_profile("source_T",  source_T);
   initial_profile("wall_shadow",  wall_shadow);
   
@@ -88,7 +88,7 @@ int NORTH::init(bool UNUSED(restart)) {
 
   SOLVE_FOR(T, vort, n);
   SAVE_REPEAT(phi);
-  SAVE_ONCE(source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field);
+  SAVE_ONCE(B, source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field);
 
   phiSolver = Laplacian::create();
   phi = 0.; // Starting phi
@@ -157,18 +157,19 @@ int NORTH::init(bool UNUSED(restart)) {
 }
   
 int NORTH::rhs(BoutReal t) {
-  // Treat singularity at r = 0
-  toroidalBCs.applyCenterBC(n);
-  toroidalBCs.applyCenterBC(T);
-  toroidalBCs.applyCenterBC(vort);
-  toroidalBCs.applyCenterBC(phi);
-
   fields();
   interchange();     
   diffusive();     
   source();
   sink();
   curvature();
+
+  // Treat singularity at r = 0
+  toroidalBCs.applyCenterBC(n);
+  toroidalBCs.applyCenterBC(T);
+  toroidalBCs.applyCenterBC(vort);
+  toroidalBCs.applyCenterBC(phi);
+  
   if (fast_output.enabled){
       fast_output.monitor_method(t); // Store fast output in BOUT.fast.<processor_no.>
   }
@@ -230,7 +231,7 @@ int NORTH::source() {
 	S_n -= n*n*k_recombination(T);
   }
   
-  S_w = - S_n*C(phi) - bracket_prefactor * bracket(phi, S_n, bm);
+  S_w = - n_n * k_ionization(T) * ((n/B) * vort + Grad_perp(phi) * Grad(n/B));
   
   ddt(n) += S_n;
   ddt(T) += S_T;
@@ -247,16 +248,12 @@ int NORTH::sink() {
   
   ddt(n) -= (n-n_bck)*wall_shadow/tau_wall_n;
   ddt(T) -= (T-T_bck)*wall_shadow/tau_wall_T;
-  ddt(vort) -= vort*wall_shadow/tau_wall_vort;
-  
-  // Artificial global vorticity sink
-  ddt(vort) -= vort/tau_wall_vort;
   
   return 0;
 }
 
 Field3D NORTH::C(const Field3D &f) {
-  return 1.0*kappa*(sin_z_field*DDX(f) + cos_z_over_x*DDZ(f));
+  return 2.0*kappa*(sin_z_field*DDX(f) + cos_z_over_x*DDZ(f));
 }
 
 Field3D NORTH::k_ionization(const Field3D &f) {

@@ -112,15 +112,12 @@ DT              = 100*7.6e-5        # Temperature diffusion
 tau_source	    = 3.66e2        # Source characteristic time
 tau_wall_n      = (pi*north:R/north:c_s)*north:oci          # Density wall shadow characteristic time
 tau_wall_Te     = (pi*north:R/north:c_s)*north:oci          # Temperature wall shadow characteristic time
-vort_sink_strength = 0.1                                    # Relative strength of vorticity sink
-tau_wall_vort   = (pi*north:R/north:c_s)*north:oci/vort_sink_strength          # Vorticity wall shadow characteristic time
 
 n_bck  = 0.01
 T_bck  = 1.133986420/north:Te0
 
 #tau_wall_n      = 14.1          # Density wall shadow characteristic time
 #tau_wall_Te     = 7.1           # Temperature wall shadow characteristic time
-#tau_wall_vort   = 14.1          # Vorticity wall shadow characteristic time
 
 recombination = true
 ionization = true
@@ -186,6 +183,11 @@ function 	= 0.0
 # Boundaries
 bndry_xin   = none              # Manual boundary found in code
 bndry_xout  = neumann_o2(0.0)   # Set to neumann
+# =============================================================================
+[B]
+scale       = 1.0
+function    = (north:R/north:a)/(north:R/north:a + x*cos(z))
+
 # =============================================================================
 
 [source_T]
