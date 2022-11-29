@@ -29,7 +29,7 @@ class NORTH : public PhysicsModel {
 	
 	bool recombination, ionization;
 
-    BoutReal Dvort, Dn, DT;   // Diffusion 
+    BoutReal Dvort, Dn, nu_ea, k_ei, rho_Le, DT;   // Diffusion 
     BoutReal tau_source, tau_wall_n, tau_wall_T; // Characteristic times
     
     ToroidalBCs toroidalBCs; // Class containing methods which sets the ghost points at singularity (r=0)
@@ -65,8 +65,16 @@ int NORTH::init(bool UNUSED(restart)) {
   n0 = options["n0"].withDefault(1.0e16);
 
   Dvort = options["Dvort"].withDefault(1.0e-2);
-  Dn = options["Dn"].withDefault(1.0e-2);
+  Dn = options["Dn"].withDefault(1.0e-2); // Deprecated
+  k_ei = options["k_ei"].withDefault(1.05e-6);
+  nu_ea = options["nu_ea"].withDefault(0.1103);
+  rho_Le = options["rho_Le"].withDefault(85.6);
   DT = options["DT"].withDefault(1.0e-2);
+
+  std::cout << "\n************* This run is with ***************\n";
+  std::cout << "\n Updated diffusion coeffiecients. ML's BC (applied before rhs). \n";
+  // std::cout << "\n************* k_ei ***************\n";
+  // std::cout << k_ei;
 
   tau_source 	= options["tau_source"].withDefault(1.0);
   tau_wall_n = options["tau_wall_n"].withDefault(1.0);
@@ -157,18 +165,18 @@ int NORTH::init(bool UNUSED(restart)) {
 }
   
 int NORTH::rhs(BoutReal t) {
-  fields();
-  interchange();     
-  diffusive();     
-  source();
-  sink();
-  curvature();
-
   // Treat singularity at r = 0
   toroidalBCs.applyCenterBC(n);
   toroidalBCs.applyCenterBC(T);
   toroidalBCs.applyCenterBC(vort);
   toroidalBCs.applyCenterBC(phi);
+
+  fields();
+  interchange();
+  diffusive();   
+  source();
+  sink();
+  curvature();
   
   if (fast_output.enabled){
       fast_output.monitor_method(t); // Store fast output in BOUT.fast.<processor_no.>
@@ -211,7 +219,9 @@ int NORTH::diffusive() {
   mesh->communicate(n, vort, T);
 
   // Diffusive transport
-  ddt(n) += Dn*Delp2(n);
+  ddt(n) += k_ei * pow(rho_Le, 2) * Div(n * Grad_perp(n)); // Diffusion from ion-electron collisions
+  ddt(n) += nu_ea * pow(rho_Le, 2) * Delp2(n); // Diffusion from electron-atom collisions
+  // ddt(n) += Dn*Delp2(n); // Deprecated
   ddt(T) += DT*Delp2(T);
   ddt(vort) += Dvort*Delp2(vort);
   return 0;

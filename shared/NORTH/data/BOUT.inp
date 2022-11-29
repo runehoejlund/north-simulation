@@ -91,22 +91,36 @@ B0 		= 0.077 	# (T), 	magnetic field on axis
 R_res   = 0.219     # (m)     ECR radial position
 
 E_ion   = 24.59/Te0 # absolute value of the Bohm normalized ionization energy
-n_n     = 1.2e19/n0    # Bohm normalized neutral number density
+n_n_SI  = 1.2e19
+n_n     = n_n_SI/n0    # Bohm normalized neutral number density
 
 
-e 		= 1.60e-19 	# (C)
-mp		= 1.67e-27 	# (kg)
-atomic_mass_number       = 4  # Atomic mass number (for He)
-mi      = atomic_mass_number*mp      # (kg)
+e 		= 1.60e-19 	# [C]
+me      = 9.1094e-31 # Electron mass [kg]
+mp		= 1.67e-27 	# Proton mass [kg]
+atomic_mass_number = 4  # Atomic mass number (for He)
+mi      = atomic_mass_number*mp      # Ion nucleus mass [kg]
 
 oci 		= e*B0/(mi) 		            # ion gyrofrequency (s^-1)
-c_s          = sqrt(Te0*e/(mi))             # Cold-ion sound speed (m/s)
-rho_s 		= c_s/oci   	    # cold-ion hybrid thermal gyro-radius 
+c_s         = sqrt(Te0*e/(mi))             # Cold-ion sound speed (m/s)
+rho_s 		= c_s/oci   	    # cold-ion hybrid thermal gyro-radius [m]
+rho_Le_SI    = sqrt(me * (Te0*e)/(e^2 * B0^2))   # Larmor radius [m]
+rho_Le       = rho_Le_SI/rho_s              # Normalised Larmor radius
 
 kappa 		    = rho_s^2/(R*a) 	    # Effective gravity.
 
+eps0            = 8.854187815e-12   # Vacuum Permitivity [kg^-1 * m^-3 * s^2 * C^2]
+lambda_D        = sqrt((eps0 * Te0 * e) / (n0 * e^2)) # Debye Length [m]
+
 Dvort 		    = 50*2.2e-3	      # Vorticity diffusion
-Dn 		    	= 100*7.6e-5 	   	# Density diffusion
+Dn 		    	= 100*7.6e-5 	   	# Density diffusion [deprecated]
+ln_lambda       = log(12*pi*n0*lambda_D^3)
+k_ei_SI         = 2^(1/2) * e^4 * ln_lambda / (12*pi^(3/2) * eps0^2 * me^(1/2) * (Te0 * e)^(3/2))   # ion-electrons collision rate coefficient [m^3 s^-1]
+k_ei            = k_ei_SI * n0/oci
+sigma_ea        = 6e-21 # Neutral electron cross section.
+nu_ea_SI        = (8 * sqrt(2) / (3 * sqrt(pi))) * n_n_SI * sqrt(Te0*e/me) * sigma_ea    # electron-neutrals collision frequency [s^-1]
+nu_ea           = nu_ea_SI/oci
+
 DT              = 100*7.6e-5        # Temperature diffusion
 
 tau_source	    = 3.66e2        # Source characteristic time
