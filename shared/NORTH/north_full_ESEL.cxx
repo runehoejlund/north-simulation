@@ -16,7 +16,7 @@ class NORTH : public PhysicsModel {
     Field3D phi, B;      // Electrostatic potential and B-field
     Field3D source_T, wall_shadow, bracket_prefactor, cos_z_over_x, sin_z_field; // Density source, Temperature source
     Field3D S_n, S_T, S_w; // Volume source/sink terms
-	Field3D n_bck, T_bck;
+	  Field3D n_bck, T_bck;
 
     // Model parameters
     BoutReal kappa;           // Effective gravity
@@ -26,8 +26,8 @@ class NORTH : public PhysicsModel {
     BoutReal rho_s;           // Ion larmor radius
     BoutReal oci;             // Ion cyclotron frequency
     BoutReal n0;              // Reference density
-	
-	bool recombination, ionization;
+
+	  bool recombination, ionization;
 
     BoutReal Dvort, Dn, nu_ea, k_ei, rho_Le, DT;   // Diffusion 
     BoutReal tau_source, tau_wall_n, tau_wall_T; // Characteristic times
@@ -72,9 +72,8 @@ int NORTH::init(bool UNUSED(restart)) {
   DT = options["DT"].withDefault(1.0e-2);
 
   std::cout << "\n************* This run is with ***************\n";
-  std::cout << "\n Updated diffusion coeffiecients. ML's BC (applied before rhs). \n";
-  // std::cout << "\n************* k_ei ***************\n";
-  // std::cout << k_ei;
+  std::cout << "\n New Diffusion Coefficients. Only neutral-electron collisions. My BCs. \n";
+  std::cout << nu_ea * pow(rho_Le, 2);
 
   tau_source 	= options["tau_source"].withDefault(1.0);
   tau_wall_n = options["tau_wall_n"].withDefault(1.0);
@@ -219,7 +218,8 @@ int NORTH::diffusive() {
   mesh->communicate(n, vort, T);
 
   // Diffusive transport
-  ddt(n) += k_ei * pow(rho_Le, 2) * Div(n * Grad_perp(n)); // Diffusion from ion-electron collisions
+  // ddt(n) += k_ei * pow(rho_Le, 2) * Div(n * Grad_perp(n)); // Diffusion from ion-electron collisions
+  // ddt(n) += k_ei * pow(rho_Le, 2) * n * Delp2(n); // Diffusion from ion-electron collisions
   ddt(n) += nu_ea * pow(rho_Le, 2) * Delp2(n); // Diffusion from electron-atom collisions
   // ddt(n) += Dn*Delp2(n); // Deprecated
   ddt(T) += DT*Delp2(T);
