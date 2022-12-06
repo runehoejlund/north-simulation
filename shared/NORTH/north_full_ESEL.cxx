@@ -30,7 +30,7 @@ class NORTH : public PhysicsModel {
 	  bool recombination, ionization;
 
     BoutReal Dvort, Dn, nu_ea, k_ei, rho_Le, DT;   // Diffusion 
-    BoutReal tau_source, tau_wall_n, tau_wall_T; // Characteristic times
+    BoutReal tau_source, tau_wall_n, tau_wall_T, tau_wall_vort; // Characteristic times
     
     ToroidalBCs toroidalBCs; // Class containing methods which sets the ghost points at singularity (r=0)
 
@@ -72,12 +72,14 @@ int NORTH::init(bool UNUSED(restart)) {
   DT = options["DT"].withDefault(1.0e-2);
 
   std::cout << "\n************* This run is with ***************\n";
-  std::cout << "\n New Diffusion Coefficients. Only neutral-electron collisions. My BCs. \n";
-  std::cout << nu_ea * pow(rho_Le, 2);
+  std::cout << "\n No vort source. Old Diffusion Coefficients. Global vorticity sink, and weak vort wall sink. \n";
+  std::cout << Dn;
+  // std::cout << nu_ea * pow(rho_Le, 2);
 
   tau_source 	= options["tau_source"].withDefault(1.0);
   tau_wall_n = options["tau_wall_n"].withDefault(1.0);
   tau_wall_T = options["tau_wall_T"].withDefault(1.0);
+  tau_wall_vort = options["tau_wall_vort"].withDefault(1.0);
   
   recombination = options["recombination"].withDefault(true);
   ionization = options["ionization"].withDefault(true);
@@ -218,10 +220,10 @@ int NORTH::diffusive() {
   mesh->communicate(n, vort, T);
 
   // Diffusive transport
-  // ddt(n) += k_ei * pow(rho_Le, 2) * Div(n * Grad_perp(n)); // Diffusion from ion-electron collisions
-  // ddt(n) += k_ei * pow(rho_Le, 2) * n * Delp2(n); // Diffusion from ion-electron collisions
-  ddt(n) += nu_ea * pow(rho_Le, 2) * Delp2(n); // Diffusion from electron-atom collisions
-  // ddt(n) += Dn*Delp2(n); // Deprecated
+  // ddt(n) += k_ei * pow(rho_Le, 2) * Div(n * Grad_perp(n)); // Diffusion from ion-electron collisions (approximation 1)
+  // ddt(n) += k_ei * pow(rho_Le, 2) * n * Delp2(n); // Diffusion from ion-electron collisions (approximation 2)
+  // ddt(n) += nu_ea * pow(rho_Le, 2) * Delp2(n); // Diffusion from electron-atom collisions
+  ddt(n) += Dn*Delp2(n); // Deprecated
   ddt(T) += DT*Delp2(T);
   ddt(vort) += Dvort*Delp2(vort);
   return 0;
@@ -241,11 +243,11 @@ int NORTH::source() {
 	S_n -= n*n*k_recombination(T);
   }
   
-  S_w = - n_n * k_ionization(T) * ((n/B) * vort + Grad_perp(phi) * Grad(n/B));
+  // S_w = - n_n * k_ionization(T) * ((n/B) * vort + Grad_perp(phi) * Grad(n/B));
   
   ddt(n) += S_n;
   ddt(T) += S_T;
-  ddt(vort) += S_w;
+  // ddt(vort) += S_w;
   
   ddt(T) += source_T/(tau_source*n); // Heating source
   
@@ -258,7 +260,11 @@ int NORTH::sink() {
   
   ddt(n) -= (n-n_bck)*wall_shadow/tau_wall_n;
   ddt(T) -= (T-T_bck)*wall_shadow/tau_wall_T;
+  ddt(vort) -= vort*wall_shadow/tau_wall_vort;
   
+  // Artifical global vorticity sink
+  ddt(vort) -= vort/tau_wall_vort;
+
   return 0;
 }
 
