@@ -34,7 +34,6 @@
 class ToroidalBCs {
 private:
   // Data members
-  int piIndex;          //!< Index corresponding to \f$\pi\f$
   int firstUpperYGhost; //!< Given that the processor has a boundary
   int firstLowerYGhost; //!< Given that the processor has a boundary
 
