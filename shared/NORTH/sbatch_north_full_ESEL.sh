@@ -1,17 +1,17 @@
 #!/bin/bash
-#SBATCH --job-name=x24_w_sink_inner_B_3_outer_B_0
+#SBATCH --job-name=no_vort_source_but_vort_wall_sink_and_global_vort_sink
 #SBATCH --mail-type=NONE
 #SBATCH --partition=xeon24
 #SBATCH -N 1 # Number of nodes
 #SBATCH -n 24 # Total number of tasks
-#SBATCH --time=0-9:10:00
+#SBATCH --time=0-2:10:00
 #SBATCH --output=./slurm_out/north_%j_%x_ESEL.log
 #SBATCH --error=./slurm_out/north_%j_%x_ESEL_err.log
 
 # Set input and output directory
 IN_DIR=$PWD/data
 # NOTE: Change IN_DIR if using restart and append=true
-# IN_DIR=$PWD/data_5674003
+# IN_DIR=$PWD/data_5703126
 
 OUT_DIR=$PWD/data_$SLURM_JOB_ID
 SCRATCH_DIR=/scratch/$USER/$SLURM_JOB_ID
@@ -42,8 +42,10 @@ make
 # mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit = 3
 # NOTE: Change IN_DIR if using restart and append=true
 # mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true restart append=true wall_limit = 24
+# mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true restart append=true wall_limit=6 north:Dn=5e-3 north:DT=5e-3 north:Dvort=5e-3 north:tau_wall_scale=10
+
 # NOTE: Use this to set flags for input parameters while running
-mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit=9 north:diff_scale_ea=500 north:tau_wall_scale=10
+mpirun -n $SLURM_NTASKS ./north_full_ESEL stopCheck=true append=false wall_limit=2 north:Dn=5e-3 north:DT=5e-3 north:Dvort=5e-3 north:tau_wall_scale=10
 
 # When done: Move output files back to output directory
 mkdir -p $OUT_DIR
