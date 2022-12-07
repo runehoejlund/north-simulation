@@ -1,5 +1,7 @@
 # North Simulation
-Numerical model for a magnetically confined plasma in the NORTH tokamak. We use [BOUT++](http://boutproject.github.io/) for numerical simulation. Note: The bout++ model was developed at DTU Physics by the Plasma Physics and Fusion Energy group.
+Numerical reduced fluid model of perpendicular dynamics a magnetically confined plasma in the NORTH tokamak. We use [BOUT++](http://boutproject.github.io/) for numerical simulation. Note: The bout++ model is an implementation of the ESEL equations, developed at DTU Physics by the Plasma Physics and Fusion Energy group.
+
+To reproduce the main results of the data analysis, open and run the iPython Notebook `main_results.ipynb`. Note: It requires data from a simulation run. See the documentaion below on how to run simulations either on the Niflheim environment or (perhaps easier for a start) on your personal computer.
 
 ## Getting started
 ---------------------------------------------------------
@@ -177,7 +179,7 @@ conda activate north-simulation
 pip install -r requirements.txt
 ```
 
-Run the file `data_analysis.py` to reproduce the main results.
+To reproduce the main results of the data analysis, refer to the iPython Notebook `main_results.ipynb`.
 
 ## Usefull commands
 here are some usefull commands. If you're on your personal computer, I assume you have Docker running, started a Docker container and navigated to the north directory.
