@@ -1,6 +1,8 @@
 # North Simulation
 Numerical reduced fluid model of perpendicular dynamics a magnetically confined plasma in the NORTH tokamak. We use [BOUT++](http://boutproject.github.io/) for numerical simulation. Note: The bout++ model is an implementation of the ESEL equations, developed at DTU Physics by the Plasma Physics and Fusion Energy group.
 
+The results can be seen in the folder [presentation of main results](https://github.com/PPFE-Turbulence/north-simulation/tree/master/presentation%20of%20main%20results).
+
 To reproduce the main results of the data analysis, open and run the iPython Notebook `main_results.ipynb`. Note: It requires data from a simulation run. See the documentaion below on how to run simulations either on the Niflheim environment or (perhaps easier for a start) on your personal computer.
 
 ## Getting started
