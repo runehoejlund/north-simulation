@@ -19,9 +19,9 @@ MOD_FILES_DIR=$MOD_DIR/modules/all
 MOD_DOWN_DIR=$MOD_DIR/downloads
 MOD_INSTALL_DIR=$MOD_DIR/software
 
-echo "purging modules and loading tool-chains: foss, Python"
+echo "purging modules and loading tool-chains: foss/2021b, Python"
 module purge
-module load foss Python
+module load foss/2021b Python
 
 echo "copying module files to $MOD_FILES_DIR"
 mkdir -p $MOD_FILES_DIR
@@ -103,17 +103,19 @@ $PIP completion --bash >> bin/activate
 # Purge and reload all required modules
 module purge
 module use $MOD_FILES_DIR
-module load foss HDF5/1.12.1 netCDF/2022 Python
+module load foss/2021b HDF5/1.12.1 netCDF/2022 Python
 module save bout
 
-# # Install Bout-Dev
-# echo "####################################"
-# echo "Installing Bout-Dev"
-# cd ~/north-simulation/shared
+# Install Bout-Dev
+echo "####################################"
+echo "Installing Bout-Dev"
+cd ~/north-simulation/shared
 # git clone https://github.com/boutproject/BOUT-dev.git
-# cd BOUT-dev
-# ./configure
-# make
+cd BOUT-dev
+# git checkout 2b2223b51cb4c1f2013950a4586619f8a917d32c # This commit has previously worked
+# git pull
+./configure
+make
 
 echo "####################################"
 echo "Succesfully installed all requirements"
